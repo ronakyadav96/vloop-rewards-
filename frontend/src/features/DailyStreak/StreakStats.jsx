@@ -1,25 +1,47 @@
-import { CalendarCheck2, Gift, TimerReset } from 'lucide-react';
+import { Calendar, CheckSquare, Star } from 'lucide-react';
 import styles from './DailyStreak.module.css';
 
 function StreakStats({ status }) {
-  const stats = [
-    { label: 'Total rewards', value: status?.totalRewards ?? '—', icon: Gift, tone: 'gold' },
-    { label: 'Checked in', value: status?.checkedIn ? 'Yes' : 'Not yet', icon: CalendarCheck2, tone: 'green' },
-    { label: 'Next reward', value: status?.nextReward?.title ?? '—', icon: TimerReset, tone: 'purple' },
-  ];
+  const totalRewards = status?.totalRewards ?? 7;
+  const checkedInCount = status?.checkedInCount ?? (typeof status?.checkedIn === 'number' ? status.checkedIn : status?.checkedIn ? 1 : 0);
+  const nextRewardTitle = status?.nextReward?.title ?? '+10 VEs';
 
   return (
-    <section className={styles.statsGrid} aria-label="Streak statistics">
-      {stats.map(({ label, value, icon: Icon, tone }) => (
-        <article className={`${styles.statCard} ${styles[`stat${tone}`]}`} key={label}>
-          <span className={styles.statIcon}><Icon size={18} /></span>
-          <div>
-            <span className={styles.statLabel}>{label}</span>
-            <strong className={styles.statValue}>{value}</strong>
+    <div className={styles.statsContainer}>
+      <div className={styles.statCard}>
+        <div className={styles.statIconWrap}>
+          <Calendar size={17} className={styles.statIconPurple} />
+        </div>
+        <div className={styles.statTextWrap}>
+          <span className={styles.statTitle}>Total Rewards</span>
+          <strong className={styles.statNumber}>{totalRewards}</strong>
+        </div>
+      </div>
+
+      <div className={styles.statCard}>
+        <div className={styles.statIconWrap}>
+          <div className={styles.checkBadgeSquare}>
+            <CheckSquare size={17} className={styles.statIconGreen} />
           </div>
-        </article>
-      ))}
-    </section>
+        </div>
+        <div className={styles.statTextWrap}>
+          <span className={styles.statTitle}>Checked In</span>
+          <strong className={styles.statNumber}>{checkedInCount}</strong>
+        </div>
+      </div>
+
+      <div className={styles.statCard}>
+        <div className={styles.statIconWrap}>
+          <div className={styles.starCircle}>
+            <Star size={16} fill="currentColor" className={styles.statIconGold} />
+          </div>
+        </div>
+        <div className={styles.statTextWrap}>
+          <span className={styles.statTitle}>Next Reward</span>
+          <strong className={styles.statNumber}>{nextRewardTitle}</strong>
+        </div>
+      </div>
+    </div>
   );
 }
 

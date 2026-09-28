@@ -1,20 +1,234 @@
 {
-  "info": {"name": "VELoop Rewards API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json", "description": "Local API collection. Set baseUrl, email, displayName, and password in a Postman environment."},
+  "info": {
+    "name": "VELoop Rewards API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Comprehensive Postman collection for VELoop Rewards Daily Streak, covering Authentication, Streak State, Claims, History, and Negative/Anti-Cheat tests."
+  },
   "variable": [
-    {"key":"baseUrl","value":"http://localhost:5002/api"}, {"key":"email","value":"demo@example.com"}, {"key":"displayName","value":"Demo User"}, {"key":"password","value":"change-me-123"}, {"key":"token","value":""}, {"key":"idempotencyKey","value":"postman-day-1-{{$guid}}"}
+    { "key": "baseUrl", "value": "http://localhost:5002/api" },
+    { "key": "email", "value": "demo@example.com" },
+    { "key": "displayName", "value": "Demo User" },
+    { "key": "password", "value": "password123" },
+    { "key": "token", "value": "" },
+    { "key": "idempotencyKey", "value": "postman-day-1-{{$guid}}" }
   ],
   "item": [
-    {"name":"Auth","item":[
-      {"name":"Register","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"{{email}}\",\n  \"displayName\": \"{{displayName}}\",\n  \"password\": \"{{password}}\"\n}"},"url":{"raw":"{{baseUrl}}/auth/register"}},"event":[{"listen":"test","script":{"exec":["if (pm.response.code === 201) pm.collectionVariables.set('token', pm.response.json().token);"]}}]},
-      {"name":"Login","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"},"url":{"raw":"{{baseUrl}}/auth/login"}},"event":[{"listen":"test","script":{"exec":["if (pm.response.code === 200) pm.collectionVariables.set('token', pm.response.json().token);"]}}]},
-      {"name":"Current user","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/auth/me"}}},
-      {"name":"Logout","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/auth/logout"}}}
-    ]},
-    {"name":"Daily Streak","item":[
-      {"name":"Status","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/daily-streak/status"}}},
-      {"name":"Claim","request":{"method":"POST","header":[{"key":"Authorization","value":"Bearer {{token}}"},{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"idempotencyKey\": \"{{idempotencyKey}}\"\n}"},"url":{"raw":"{{baseUrl}}/daily-streak/claim"}}},
-      {"name":"History","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/daily-streak/history?limit=50"}}},
-      {"name":"Streak config","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/streak/config"}}}
-    ]}
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"displayName\": \"{{displayName}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  pm.collectionVariables.set('token', pm.response.json().token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Current user",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/logout" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Daily Streak",
+      "item": [
+        {
+          "name": "Get Streak (/daily-streak)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/daily-streak" }
+          }
+        },
+        {
+          "name": "Get Status (/daily-streak/status)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/daily-streak/status" }
+          }
+        },
+        {
+          "name": "Claim Day 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idempotencyKey\": \"{{idempotencyKey}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        },
+        {
+          "name": "Get Updated Streak Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/daily-streak/status" }
+          }
+        },
+        {
+          "name": "Claim Day 2 (When Unlocked)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        },
+        {
+          "name": "Get History (/daily-streak/history)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/daily-streak/history?limit=50" }
+          }
+        },
+        {
+          "name": "Get Streak Config",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/streak/config" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Negative & Anti-Cheat Tests",
+      "item": [
+        {
+          "name": "Negative: Unauthorized Request (No Token)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/daily-streak" }
+          }
+        },
+        {
+          "name": "Negative: Fake Day Skip (Attempt to claim Day 7 early)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"day\": 7\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        },
+        {
+          "name": "Negative: Fake Reward Injection (Client sends fake amount)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reward\": 1000000,\n  \"currency\": \"VES\",\n  \"amount\": 999999\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        },
+        {
+          "name": "Negative: User ID Injection (Client tries to spoof userId)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"attacker_user_id_123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        },
+        {
+          "name": "Negative: Idempotent Replay (Replay with same key)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idempotencyKey\": \"{{idempotencyKey}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/daily-streak/claim" }
+          }
+        }
+      ]
+    }
   ]
 }

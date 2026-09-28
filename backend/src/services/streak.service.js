@@ -44,7 +44,8 @@ export async function ensureCurrentCycle({ userId, config, now, session }) {
     session
   );
 
-  if (cycle?.lastClaimAt && now.getTime() > cycle.lastClaimAt.getTime() + MISSED_WINDOW_MS) {
+  const missedWindowMs = (config.missedWindowHours ?? 48) * 60 * 60 * 1000;
+  if (cycle?.lastClaimAt && now.getTime() > cycle.lastClaimAt.getTime() + missedWindowMs) {
     cycle.status = 'RESET';
     cycle.resetAt = now;
     cycle.resetReason = 'MISSED_CLAIM_WINDOW';
@@ -159,17 +160,20 @@ function buildStatus({ userId, config, rewards, cycle, claims, walletBalance, no
   const cards = rewards.map((reward) => buildCard({ reward, claim: claimsByDay.get(reward.dayNumber), cycle, now }));
   const currentDay = cycle.status === 'COMPLETED' ? 1 : cycle.nextDay;
   const nextReward = rewards.find((reward) => reward.dayNumber === currentDay) ?? null;
-  const checkedIn = claims.some(
+  const checkedInToday = claims.some(
     (claim) => claim.claimedAt && getDateKey(claim.claimedAt, config.timezone) === getDateKey(now, config.timezone)
   );
+  const checkedInCount = claims.length;
 
   return {
     success: true,
     serverTime: now.toISOString(),
     currentStreak: cycle.currentStreak,
     currentDay,
-    checkedIn,
-    totalRewards: claims.length,
+    checkedIn: checkedInCount,
+    checkedInCount,
+    checkedInToday,
+    totalRewards: config.cycleLength,
     nextClaimAt: cycle.nextClaimAt?.toISOString() ?? null,
     streakStatus: cycle.status,
     resetOccurred,
@@ -357,9 +361,10 @@ export async function claimDailyStreak({ userId, requestedDay, idempotencyKey: s
       await claim.save({ session });
 
       const isFinalDay = actualDay === config.cycleLength;
+      const claimWaitMs = (config.claimIntervalHours ?? 24) * 60 * 60 * 1000;
       cycle.currentStreak = actualDay;
       cycle.lastClaimAt = now;
-      cycle.nextClaimAt = addMilliseconds(now, CLAIM_WAIT_MS);
+      cycle.nextClaimAt = addMilliseconds(now, claimWaitMs);
       cycle.nextDay = isFinalDay ? 1 : actualDay + 1;
       cycle.status = isFinalDay ? 'COMPLETED' : 'ACTIVE';
       await cycle.save({ session });

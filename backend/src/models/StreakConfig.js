@@ -24,6 +24,18 @@ const streakConfigSchema = new mongoose.Schema(
       default: 'Asia/Kolkata',
       trim: true,
     },
+    claimIntervalHours: {
+      type: Number,
+      required: true,
+      default: 24,
+      min: 0,
+    },
+    missedWindowHours: {
+      type: Number,
+      required: true,
+      default: 48,
+      min: 1,
+    },
     active: {
       type: Boolean,
       default: true,

@@ -1,34 +1,46 @@
-import { ArrowLeft, Bell, ChevronDown, Flame, Gem } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronLeft, LogOut } from 'lucide-react';
+import { FlameImg } from '../../assets/veloop/index.js';
 import styles from './DailyStreak.module.css';
 
 function StreakHeader({ onBack, wallet, onLogout }) {
+  const balance = wallet?.balance !== undefined && wallet?.balance !== null
+    ? Math.round(Number(wallet.balance))
+    : 120;
+
   return (
     <header className={styles.header}>
       <div className={styles.headerInner}>
-        <button className={styles.backButton} type="button" onClick={onBack} aria-label="Go back">
-          <ArrowLeft size={18} strokeWidth={2.4} />
-          <span>Back</span>
+        <button
+          className={styles.headerBackBtn}
+          type="button"
+          onClick={onBack || (() => window.history.back())}
+          aria-label="Go back"
+        >
+          <ChevronLeft size={22} strokeWidth={2.6} />
         </button>
 
-        <Link className={styles.brand} to="/daily-streak" aria-label="VELoop home">
-          <span className={styles.brandMark}><Flame size={18} fill="currentColor" /></span>
-          <span>VE<span className={styles.brandAccent}>Loop</span></span>
-        </Link>
+        <div className={styles.headerTitleWrap}>
+          <h1 className={styles.headerTitle}>Daily Streak</h1>
+          <img className={styles.headerFlame} src={FlameImg} alt="Flame" />
+        </div>
 
-        <div className={styles.headerActions}>
-          <div className={styles.walletPill} title="Backend wallet balance">
-            <Gem size={15} />
-            <span>{wallet?.balance ?? '—'} {wallet?.currency ?? 'VE'}</span>
+        <div className={styles.headerRightActions}>
+          <div className={styles.headerGemPill} title={`Wallet Balance: ${wallet?.balance ?? 0} ${wallet?.currency ?? 'VEs'}`}>
+            <span className={styles.gemIcon}>💎</span>
+            <span className={styles.gemCount}>{balance}</span>
           </div>
-          <button className={styles.iconButton} type="button" aria-label="Notifications">
-            <Bell size={18} />
-            <span className={styles.notificationDot} />
-          </button>
-          <button className={styles.profileButton} type="button" onClick={onLogout} aria-label="Sign out">
-            <span className={styles.avatar}>V</span>
-            <ChevronDown size={15} />
-          </button>
+
+          {onLogout && (
+            <button
+              className={styles.headerLogoutBtn}
+              type="button"
+              onClick={onLogout}
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <LogOut size={16} />
+            </button>
+          )}
         </div>
       </div>
     </header>

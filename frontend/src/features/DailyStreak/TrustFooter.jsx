@@ -1,12 +1,23 @@
-import { LockKeyhole } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import styles from './DailyStreak.module.css';
 
 function TrustFooter() {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.footerBrand}><span className={styles.brandMark}><LockKeyhole size={15} /></span><span>VELoop Rewards</span></div>
-      <span>Rewards are subject to eligibility and backend verification.</span>
-      <span className={styles.footerSecure}><LockKeyhole size={13} /> Secure reward flow</span>
+    <footer className={styles.trustFooter}>
+      <div className={styles.trustStrip}>
+        <div className={styles.trustLeft}>
+          <div className={styles.vrShieldLogo}>VR</div>
+          <div className={styles.trustTextWrap}>
+            <span className={styles.trustDomain}>Official rewards only on VeloopRewards.in</span>
+            <span className={styles.trustDivider}>|</span>
+            <span className={styles.trustTagline}>Stay active, stay rewarded!</span>
+          </div>
+        </div>
+
+        <div className={styles.trustRight}>
+          <ChevronRight size={18} className={styles.trustChevron} />
+        </div>
+      </div>
     </footer>
   );
 }
