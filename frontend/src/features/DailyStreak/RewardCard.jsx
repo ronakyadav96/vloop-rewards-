@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Lock } from 'lucide-react';
+import { Check, ChevronRight, Flame, Gift, Lock, Sparkles, Trophy } from 'lucide-react';
 import {
   Day4BoxImg,
   Day5AmazonImg,
@@ -7,7 +7,7 @@ import {
 } from '../../assets/veloop/index.js';
 import styles from './DailyStreak.module.css';
 
-function getCardImage(dayNumber, rewardType) {
+function getCardImage(dayNumber) {
   if (dayNumber === 7) return Day7CrownImg;
   if (dayNumber === 4) return Day4BoxImg;
   if (dayNumber === 5) return Day5AmazonImg;
@@ -19,16 +19,16 @@ function getBadge(dayNumber, state) {
     return { type: 'check' };
   }
   if (state === 'TODAY' || state === 'AVAILABLE') {
-    return { type: 'text', label: 'Today', className: styles.badgeToday };
+    return { type: 'text', label: 'Today', className: styles.badgeToday, icon: Flame };
   }
   if (dayNumber === 5) {
-    return { type: 'text', label: 'Gift Card', className: styles.badgeGiftCard };
+    return { type: 'text', label: 'Gift Card', className: styles.badgeGiftCard, icon: Gift };
   }
   if (dayNumber === 6) {
-    return { type: 'text', label: 'Coin', className: styles.badgeCoin };
+    return { type: 'text', label: 'Coin', className: styles.badgeCoin, icon: Sparkles };
   }
   if (dayNumber === 7) {
-    return { type: 'text', label: 'VIP', className: styles.badgeVip };
+    return { type: 'text', label: 'VIP', className: styles.badgeVip, icon: Trophy };
   }
   return null;
 }
@@ -44,8 +44,11 @@ function RewardCard({ card, countdown, onSelect }) {
   const state = card.state; // 'CLAIMED' | 'AVAILABLE' | 'TODAY' | 'LOCKED' | 'MISSED'
   const isActionable = state === 'AVAILABLE' || state === 'TODAY';
   const isClaimed = state === 'CLAIMED';
+  const isDay4 = day === 4;
+  const isDay7 = day === 7;
+
   const badge = getBadge(day, state);
-  const cardImg = getCardImage(day, card.reward?.rewardType);
+  const cardImg = getCardImage(day);
   const valueColorClass = getValueColorClass(day, state);
 
   // Values and subtitles
@@ -62,33 +65,45 @@ function RewardCard({ card, countdown, onSelect }) {
 
   return (
     <article
-      className={`${styles.rewardCard} ${isActionable ? styles.cardActive : ''} ${isClaimed ? styles.cardClaimed : ''}`}
+      className={`${styles.rewardCard} ${isActionable ? styles.cardActive : ''} ${
+        isClaimed ? styles.cardClaimed : ''
+      } ${isDay4 ? styles.cardMilestone4 : ''} ${isDay7 ? styles.cardMilestone7 : ''}`}
       aria-label={`Day ${day}: ${title}`}
     >
+      {/* Ambient Radial Glow Effect */}
+      <div className={styles.cardAuraGlow} />
+
+      {/* Card Header (Day Number + Badge) */}
       <div className={styles.cardHeader}>
         <span className={styles.cardDayLabel}>Day {day}</span>
 
         {badge && badge.type === 'check' && (
-          <div className={styles.cardCheckCircle}>
-            <Check size={13} strokeWidth={3} />
+          <div className={styles.cardCheckCircle} title="Claimed">
+            <Check size={12} strokeWidth={3} />
           </div>
         )}
 
         {badge && badge.type === 'text' && (
           <span className={`${styles.cardBadgePill} ${badge.className}`}>
+            {badge.icon && <badge.icon size={10} className={styles.badgeIcon} />}
             {badge.label}
           </span>
         )}
       </div>
 
+      {/* Card Artwork with Pedestal Halo */}
       <div className={styles.cardImgWrap}>
+        <div className={styles.cardPedestalHalo} />
         <img
           src={cardImg}
           alt={`Day ${day} reward`}
-          className={`${styles.cardImg} ${isClaimed ? styles.claimedImg : ''} ${!isActionable && !isClaimed ? styles.lockedImg : ''}`}
+          className={`${styles.cardImg} ${isClaimed ? styles.claimedImg : ''} ${
+            !isActionable && !isClaimed ? styles.lockedImg : ''
+          }`}
         />
       </div>
 
+      {/* Card Value Content */}
       <div className={styles.cardTextContent}>
         <span className={styles.cardRewardTitle}>{title}</span>
         <div className={`${styles.cardHighlightValue} ${valueColorClass}`}>
@@ -97,10 +112,11 @@ function RewardCard({ card, countdown, onSelect }) {
         <span className={styles.cardSubtitle}>{subtitle}</span>
       </div>
 
+      {/* Card Action Button */}
       <div className={styles.cardActionWrap}>
         {isClaimed ? (
           <button className={styles.btnClaimed} type="button" disabled>
-            <Check size={14} strokeWidth={2.5} />
+            <Check size={13} strokeWidth={2.6} />
             <span>Claimed</span>
           </button>
         ) : isActionable ? (
@@ -110,11 +126,11 @@ function RewardCard({ card, countdown, onSelect }) {
             onClick={() => onSelect(card)}
           >
             <span>Claim Reward</span>
-            <ChevronRight size={15} strokeWidth={2.5} />
+            <ChevronRight size={14} strokeWidth={2.6} />
           </button>
         ) : (
           <button className={styles.btnLocked} type="button" disabled>
-            <Lock size={13} />
+            <Lock size={12} />
             <span>{countdown && card.nextClaimAt ? countdown : 'Locked'}</span>
           </button>
         )}
