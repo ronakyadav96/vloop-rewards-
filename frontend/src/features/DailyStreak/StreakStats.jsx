@@ -1,4 +1,4 @@
-import { Calendar, CheckSquare, Sparkles, Star } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Coins } from 'lucide-react';
 import styles from './DailyStreak.module.css';
 
 function StreakStats({ status }) {
@@ -11,7 +11,8 @@ function StreakStats({ status }) {
       {/* 1. Total Rewards */}
       <div className={`${styles.statCard} ${styles.statCardPurple}`}>
         <div className={styles.statIconWrap}>
-          <Calendar size={17} className={styles.statIconPurple} />
+          <div className={styles.statIconGlowPurple} />
+          <CalendarDays size={18} strokeWidth={2.2} className={styles.statIconPurple} />
         </div>
         <div className={styles.statTextWrap}>
           <span className={styles.statTitle}>Total Rewards</span>
@@ -22,9 +23,8 @@ function StreakStats({ status }) {
       {/* 2. Checked In */}
       <div className={`${styles.statCard} ${styles.statCardGreen}`}>
         <div className={styles.statIconWrap}>
-          <div className={styles.checkBadgeSquare}>
-            <CheckSquare size={17} className={styles.statIconGreen} />
-          </div>
+          <div className={styles.statIconGlowGreen} />
+          <CheckCircle2 size={18} strokeWidth={2.2} className={styles.statIconGreen} />
         </div>
         <div className={styles.statTextWrap}>
           <span className={styles.statTitle}>Checked In</span>
@@ -35,9 +35,8 @@ function StreakStats({ status }) {
       {/* 3. Next Reward */}
       <div className={`${styles.statCard} ${styles.statCardGold}`}>
         <div className={styles.statIconWrap}>
-          <div className={styles.starCircle}>
-            <Star size={16} fill="currentColor" className={styles.statIconGold} />
-          </div>
+          <div className={styles.statIconGlowGold} />
+          <Coins size={18} strokeWidth={2.2} className={styles.statIconGold} />
         </div>
         <div className={styles.statTextWrap}>
           <span className={styles.statTitle}>Next Reward</span>

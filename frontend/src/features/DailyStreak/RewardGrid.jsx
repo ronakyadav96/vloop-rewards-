@@ -75,6 +75,8 @@ function RewardGrid({ cards, countdown, onSelect }) {
                   title={`Day ${c.day}: ${c.reward?.title || ''}`}
                 >
                   {isCurrent && <span className={styles.nodeTodayIndicator}>Today</span>}
+                  {!isCurrent && isDay7Milestone && <span className={styles.nodeMilestoneBadgeGold}>VIP</span>}
+                  {!isCurrent && isDay4Milestone && <span className={styles.nodeMilestoneBadgePurple}>Gift</span>}
                   <div className={styles.nodeCircle}>
                     {isClaimed ? (
                       <Check size={12} strokeWidth={3} className={styles.nodeCheckIcon} />
@@ -87,6 +89,11 @@ function RewardGrid({ cards, countdown, onSelect }) {
                     )}
                   </div>
                   <span className={styles.nodeLabel}>Day {c.day}</span>
+                  <span className={`${styles.nodeRewardPreview} ${isClaimed ? styles.previewClaimed : isCurrent ? styles.previewCurrent : ''}`}>
+                    {c.reward?.rewardType === 'GIFT_CARD'
+                      ? `₹${Math.round(Number(c.reward?.amount || 1))}`
+                      : `+${Math.round(Number(c.reward?.amount || 5))}`}
+                  </span>
                 </div>
               );
             })}

@@ -464,21 +464,78 @@
 
 .statIconWrap {
   flex-shrink: 0;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.statCardPurple .statIconWrap {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.statCardGreen .statIconWrap {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.statCardGold .statIconWrap {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.statIconGlowPurple {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.statIconGlowGreen {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.statIconGlowGold {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
 }
 
 .statIconPurple {
   color: #c084fc;
-  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.6));
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.6));
+  position: relative;
+  z-index: 2;
 }
 
-.checkBadgeSquare {
+.statIconGreen {
   color: #4ade80;
-  filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.6));
+  filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.6));
+  position: relative;
+  z-index: 2;
 }
 
-.starCircle {
+.statIconGold {
   color: #facc15;
-  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.7));
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.7));
+  position: relative;
+  z-index: 2;
 }
 
 .statTextWrap {
@@ -648,30 +705,42 @@
   filter: drop-shadow(0 2px 10px rgba(250, 204, 21, 0.3));
 }
 
-.amazonBrandWrap {
+.amazonBadgePill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(14, 5, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   margin-top: 5px;
+  width: fit-content;
 }
 
-.amazonLetter {
-  display: inline-grid;
-  place-items: center;
+.amazonLogoSquare {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 5px;
   background: #ffffff;
-  color: #111827;
-  font-weight: 900;
-  font-size: 0.75rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
 }
 
-.amazonBrandName {
-  font-size: 0.84rem;
-  color: #e9d5ff;
+.amazonLetterA {
+  color: #111827;
+  font-weight: 950;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.amazonBrandText {
+  font-size: 0.82rem;
+  color: #f1f5f9;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .ultimateLockWrap {
@@ -873,6 +942,32 @@
   animation: pulseBeaconAnim 2s infinite;
 }
 
+.nodeMilestoneBadgePurple {
+  font-size: 0.5rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  padding: 1px 5px;
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+  line-height: 1.2;
+}
+
+.nodeMilestoneBadgeGold {
+  font-size: 0.5rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1e093a;
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  padding: 1px 5px;
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+  line-height: 1.2;
+}
+
 .nodeCircle {
   width: 28px;
   height: 28px;
@@ -932,6 +1027,32 @@
   font-size: 0.65rem;
   color: #a78bfa;
   font-weight: 700;
+}
+
+.nodeRewardPreview {
+  font-size: 0.58rem;
+  font-weight: 850;
+  color: #c4b5fd;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.previewClaimed {
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.previewCurrent {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.14);
+  border-color: rgba(250, 204, 21, 0.35);
+  font-weight: 900;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.3);
 }
 
 .railNodeClaimed .nodeLabel {
@@ -2209,6 +2330,18 @@
 
   .nodeLabel {
     font-size: 0.58rem;
+  }
+
+  .nodeRewardPreview {
+    font-size: 0.52rem;
+    padding: 1px 4px;
+  }
+
+  .nodeTodayIndicator,
+  .nodeMilestoneBadgePurple,
+  .nodeMilestoneBadgeGold {
+    font-size: 0.46rem;
+    padding: 0 4px;
   }
 
   /* 4+3 Layout for Mobile */
