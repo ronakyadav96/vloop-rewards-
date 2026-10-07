@@ -27,17 +27,20 @@ function RewardGrid({ cards, countdown, onSelect }) {
         <div className={styles.trackerHeader}>
           <div className={styles.trackerTitleBlock}>
             <div className={styles.trackerFlameIconWrap}>
-              <Flame size={18} className={styles.trackerFlameSvg} />
+              <Flame size={19} strokeWidth={2.2} className={styles.trackerFlameSvg} />
             </div>
             <div>
-              <span className={styles.trackerEyebrow}>7-DAY STREAK CHALLENGE</span>
+              <div className={styles.trackerTagRow}>
+                <span className={styles.trackerEyebrow}>7-DAY STREAK CHALLENGE</span>
+                <span className={styles.liveBeaconDot} />
+              </div>
               <h3 className={styles.trackerTitle}>Milestone Journey</h3>
             </div>
           </div>
 
           <div className={styles.trackerProgressPill}>
             <span className={styles.trackerProgressFraction}>
-              <strong>{claimedCount}</strong> / {totalDays} Claimed
+              <strong>{claimedCount}</strong> of {totalDays} Claimed
             </span>
             <div className={styles.trackerPercentTag}>{progressPercent}%</div>
           </div>
@@ -71,13 +74,14 @@ function RewardGrid({ cards, countdown, onSelect }) {
                   }`}
                   title={`Day ${c.day}: ${c.reward?.title || ''}`}
                 >
+                  {isCurrent && <span className={styles.nodeTodayIndicator}>Today</span>}
                   <div className={styles.nodeCircle}>
                     {isClaimed ? (
-                      <Check size={11} strokeWidth={3} className={styles.nodeCheckIcon} />
+                      <Check size={12} strokeWidth={3} className={styles.nodeCheckIcon} />
                     ) : isDay7Milestone ? (
-                      <Trophy size={11} className={styles.nodeMilestoneIconGold} />
+                      <Trophy size={12} strokeWidth={2.2} className={styles.nodeMilestoneIconGold} />
                     ) : isDay4Milestone ? (
-                      <Gift size={11} className={styles.nodeMilestoneIconPurple} />
+                      <Gift size={12} strokeWidth={2.2} className={styles.nodeMilestoneIconPurple} />
                     ) : (
                       <span className={styles.nodeDayNum}>{c.day}</span>
                     )}
@@ -96,10 +100,15 @@ function RewardGrid({ cards, countdown, onSelect }) {
               claimedCount >= 4 ? styles.milestonePillAchieved : ''
             }`}
           >
-            <Gift size={13} className={styles.milestonePillIconGift} />
-            <span>
-              <strong>Milestone 1:</strong> Day 4 Amazon Gift Card
-            </span>
+            <Gift size={14} strokeWidth={2} className={styles.milestonePillIconGift} />
+            <div className={styles.milestonePillTextWrap}>
+              <span>
+                <strong>Milestone 1:</strong> Day 4 Amazon Gift Card
+              </span>
+              <span className={styles.milestoneStatusTag}>
+                {claimedCount >= 4 ? '✓ Unlocked' : 'Unlocks at Day 4'}
+              </span>
+            </div>
           </div>
 
           <div
@@ -107,10 +116,15 @@ function RewardGrid({ cards, countdown, onSelect }) {
               claimedCount >= 7 ? styles.milestonePillAchieved : ''
             }`}
           >
-            <Trophy size={13} className={styles.milestonePillIconCrown} />
-            <span>
-              <strong>Final Reward:</strong> Day 7 VIP Crown ₹5
-            </span>
+            <Trophy size={14} strokeWidth={2} className={styles.milestonePillIconCrown} />
+            <div className={styles.milestonePillTextWrap}>
+              <span>
+                <strong>Grand Prize:</strong> Day 7 VIP Crown ₹5
+              </span>
+              <span className={styles.milestoneStatusTag}>
+                {claimedCount >= 7 ? '✓ Unlocked' : 'Grand Finale'}
+              </span>
+            </div>
           </div>
         </div>
       </div>

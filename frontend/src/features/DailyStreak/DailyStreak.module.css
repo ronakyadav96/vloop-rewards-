@@ -84,12 +84,31 @@
   text-shadow: 0 2px 12px rgba(168, 85, 247, 0.3);
 }
 
+.headerFlameWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .headerFlame {
   width: 24px;
   height: 24px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.8)) drop-shadow(0 0 20px rgba(249, 115, 22, 0.6));
-  animation: flameGlowAnim 3s ease-in-out infinite;
+  animation: flameGlowAnim 2.8s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.headerFlameGlow {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.5) 0%, transparent 70%);
+  filter: blur(4px);
+  z-index: 1;
 }
 
 .headerRightActions {
@@ -101,7 +120,7 @@
 .headerGemPill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   padding: 6px 15px;
   border-radius: 999px;
   background: linear-gradient(135deg, #3f126d 0%, #1c0836 100%);
@@ -115,16 +134,18 @@
   box-shadow: 0 0 24px rgba(168, 85, 247, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.gemIcon {
-  font-size: 1rem;
-  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.8));
+.headerGemSvg {
+  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.75));
+  animation: floatArtAnim 4s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 .gemCount {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 900;
   color: #f3e8ff;
   letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .headerLogoutBtn {
@@ -716,6 +737,22 @@
   animation: flameGlowAnim 2.5s ease-in-out infinite;
 }
 
+.trackerTagRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+
+.liveBeaconDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e, 0 0 14px #22c55e;
+  animation: pulseBeaconAnim 1.8s infinite;
+}
+
 .trackerEyebrow {
   display: block;
   font-size: 0.64rem;
@@ -812,13 +849,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .railNode:hover {
   transform: translateY(-2px);
+}
+
+.nodeTodayIndicator {
+  font-size: 0.52rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1e093a;
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  padding: 1px 6px;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+  line-height: 1.2;
+  animation: pulseBeaconAnim 2s infinite;
 }
 
 .nodeCircle {
@@ -904,9 +956,9 @@
 .milestonePill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 12px;
   background: rgba(168, 85, 247, 0.12);
   border: 1px solid rgba(168, 85, 247, 0.25);
   color: #c4b5fd;
@@ -916,6 +968,18 @@
 
 .milestonePill strong {
   color: #ffffff;
+}
+
+.milestonePillTextWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.milestoneStatusTag {
+  font-size: 0.6rem;
+  font-weight: 750;
+  color: #a78bfa;
 }
 
 .milestonePillGold {
@@ -930,12 +994,18 @@
   color: #86efac;
 }
 
+.milestonePillAchieved .milestoneStatusTag {
+  color: #4ade80;
+}
+
 .milestonePillIconGift {
   color: #c084fc;
+  flex-shrink: 0;
 }
 
 .milestonePillIconCrown {
   color: #facc15;
+  flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -1186,6 +1256,11 @@
   text-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
 }
 
+.valueNormal {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
 .cardSubtitle {
   font-size: 0.64rem;
   color: #94a3b8;
@@ -1215,7 +1290,7 @@
   font-weight: 850;
   cursor: pointer;
   border: 0;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btnClaimed {
@@ -1233,6 +1308,32 @@
   overflow: hidden;
 }
 
+.btnClaimNow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  animation: buttonShimmer 3s ease-in-out infinite;
+}
+
+@keyframes buttonShimmer {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  35%, 100% {
+    transform: translateX(100%) rotate(25deg);
+  }
+}
+
 .btnClaimNow:hover {
   filter: brightness(1.08);
   transform: translateY(-2px);
@@ -1248,6 +1349,11 @@
   border: 1px solid rgba(168, 85, 247, 0.25);
   color: #8b7ca8;
   cursor: default;
+}
+
+.btnLockSvg {
+  flex-shrink: 0;
+  color: #a78bfa;
 }
 
 /* --------------------------------------------------------------------------
@@ -1855,7 +1961,8 @@
    RESPONSIVE DESIGN SYSTEM
    -------------------------------------------------------------------------- */
 .mobileHeroBanner,
-.mobileStreakBar {
+.mobileStreakBar,
+.mobileStatsWrap {
   display: none;
 }
 
@@ -2014,6 +2121,11 @@
   }
 
   /* Stats Container in Mobile */
+  .mobileStatsWrap {
+    display: block;
+    margin-bottom: 12px;
+  }
+
   .statsContainer {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

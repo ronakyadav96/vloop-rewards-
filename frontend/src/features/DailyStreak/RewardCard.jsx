@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Flame, Gift, Lock, Sparkles, Trophy } from 'lucide-react';
+import { Check, ChevronRight, Clock, Flame, Gift, Lock, Sparkles, Trophy } from 'lucide-react';
 import {
   Day4BoxImg,
   Day5AmazonImg,
@@ -34,9 +34,10 @@ function getBadge(dayNumber, state) {
 }
 
 function getValueColorClass(dayNumber, state) {
-  if (state === 'CLAIMED' || dayNumber === 1) return styles.valueGreen;
-  if (dayNumber === 2 || dayNumber === 7 || state === 'TODAY' || state === 'AVAILABLE') return styles.valueGold;
-  return styles.valuePurple;
+  if (state === 'CLAIMED') return styles.valueGreen;
+  if (state === 'TODAY' || state === 'AVAILABLE' || dayNumber === 2) return styles.valueGold;
+  if (dayNumber === 7) return styles.valueGold;
+  return styles.valueNormal;
 }
 
 function RewardCard({ card, countdown, onSelect }) {
@@ -116,7 +117,7 @@ function RewardCard({ card, countdown, onSelect }) {
       <div className={styles.cardActionWrap}>
         {isClaimed ? (
           <button className={styles.btnClaimed} type="button" disabled>
-            <Check size={13} strokeWidth={2.6} />
+            <Check size={13} strokeWidth={2.8} />
             <span>Claimed</span>
           </button>
         ) : isActionable ? (
@@ -126,11 +127,15 @@ function RewardCard({ card, countdown, onSelect }) {
             onClick={() => onSelect(card)}
           >
             <span>Claim Reward</span>
-            <ChevronRight size={14} strokeWidth={2.6} />
+            <ChevronRight size={14} strokeWidth={2.8} />
           </button>
         ) : (
           <button className={styles.btnLocked} type="button" disabled>
-            <Lock size={12} />
+            {countdown && card.nextClaimAt ? (
+              <Clock size={12} strokeWidth={2.2} className={styles.btnLockSvg} />
+            ) : (
+              <Lock size={12} strokeWidth={2.2} className={styles.btnLockSvg} />
+            )}
             <span>{countdown && card.nextClaimAt ? countdown : 'Locked'}</span>
           </button>
         )}

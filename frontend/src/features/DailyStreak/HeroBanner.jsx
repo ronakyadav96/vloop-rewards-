@@ -43,10 +43,15 @@ function HeroBanner({ status }) {
           <span className={styles.mobileStreakTag}>Active</span>
         </div>
         <a href="#streak-grid" className={styles.mobileCalendarLink}>
-          <CalendarIcon size={14} />
+          <CalendarIcon size={14} strokeWidth={2.2} />
           <span>Streak Calendar</span>
-          <ChevronRight size={14} />
+          <ChevronRight size={14} strokeWidth={2.2} />
         </a>
+      </div>
+
+      {/* Mobile Stats Cards (Matches Page 63) */}
+      <div className={styles.mobileStatsWrap}>
+        <StreakStats status={status} />
       </div>
 
       {/* Desktop Hero Left Card */}
