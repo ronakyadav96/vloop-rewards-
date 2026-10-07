@@ -9,7 +9,7 @@ function HeroBanner({ status }) {
 
   const totalRewards = status?.totalRewards ?? status?.cards?.length ?? 7;
 
-  // Next reward formatting
+  // Next reward calculation
   const nextCard = status?.cards?.find((c) => c.state === 'AVAILABLE' || c.state === 'TODAY')
     || status?.cards?.find((c) => c.state === 'LOCKED');
 
@@ -19,36 +19,37 @@ function HeroBanner({ status }) {
 
   return (
     <div className={styles.heroBannerCard}>
-      {/* Ambient background glow behind the hero */}
+      {/* Ambient background glow & soft light rays */}
       <div className={styles.heroAmbientGlow} />
+      <div className={styles.heroLightBeams} />
 
       <div className={styles.heroBodyRow}>
-        {/* Left Column: Headline, Description & 3 Stats */}
+        {/* Left Column: Heading, Description & Stats */}
         <div className={styles.heroTextCol}>
-          {/* DAILY CHECK-IN Pill Tag (Matching Image 1) */}
+          {/* DAILY CHECK-IN Pill Tag (Matching Reference) */}
           <div className={styles.heroCheckInTag}>
             <div className={styles.tagFlameCircle}>
-              <Flame size={12} strokeWidth={2.8} className={styles.tagFlameSvg} />
+              <Flame size={13} strokeWidth={2.8} className={styles.tagFlameSvg} />
             </div>
             <span className={styles.tagLabel}>DAILY CHECK-IN</span>
           </div>
 
-          {/* Headline with golden radiant accent */}
+          {/* Headline: High Contrast Bold White + Radiant Gold Gradient */}
           <h2 className={styles.heroMainTitle}>
             Daily Streak,<br />
             <span className={styles.heroGoldTitle}>Bigger Rewards!</span>
           </h2>
 
           <p className={styles.heroSupportText}>
-            Check in every day, build your streak and unlock exciting rewards!
+            Check in every day, maintain your streak and unlock increasingly valuable rewards!
           </p>
 
-          {/* 3 Stat Chips (Total Rewards, Checked In, Next Reward) */}
+          {/* 3 Premium Stats Chips (Total Rewards, Checked In, Next Reward) */}
           <div className={styles.heroStatsRow}>
             {/* 1. Total Rewards */}
             <div className={styles.heroStatChip}>
               <div className={`${styles.statChipIconPlate} ${styles.platePurple}`}>
-                <Calendar size={17} strokeWidth={2.2} className={styles.statIconPurple} />
+                <Calendar size={18} strokeWidth={2.3} className={styles.statIconPurple} />
               </div>
               <div className={styles.statChipContent}>
                 <span className={styles.statChipLabel}>Total Rewards</span>
@@ -59,18 +60,18 @@ function HeroBanner({ status }) {
             {/* 2. Checked In */}
             <div className={styles.heroStatChip}>
               <div className={`${styles.statChipIconPlate} ${styles.plateGreen}`}>
-                <CheckCircle2 size={17} strokeWidth={2.4} className={styles.statIconGreen} />
+                <CheckCircle2 size={18} strokeWidth={2.5} className={styles.statIconGreen} />
               </div>
               <div className={styles.statChipContent}>
                 <span className={styles.statChipLabel}>Checked In</span>
-                <strong className={styles.statChipValue}>{claimedCount}</strong>
+                <strong className={`${styles.statChipValue} ${styles.statValueGreen}`}>{claimedCount}</strong>
               </div>
             </div>
 
             {/* 3. Next Reward */}
             <div className={styles.heroStatChip}>
               <div className={`${styles.statChipIconPlate} ${styles.plateGold}`}>
-                <Star size={17} strokeWidth={2.4} className={styles.statIconGold} />
+                <Star size={18} strokeWidth={2.5} className={styles.statIconGold} />
               </div>
               <div className={styles.statChipContent}>
                 <span className={styles.statChipLabel}>Next Reward</span>
@@ -82,35 +83,36 @@ function HeroBanner({ status }) {
           </div>
         </div>
 
-        {/* Right Column: 3D Gift Box, Orbiting Coins & Sparkles (Matching Image 1) */}
+        {/* Right Column: Floating 3D Gift Box with Orbiting Coins & Glow */}
         <div className={styles.heroVisualCol}>
           <div className={styles.heroArtStage}>
-            {/* Glowing circular orbit ring behind the gift */}
+            {/* Pedestal & Glowing Circular Orbit Ring */}
+            <div className={styles.heroPedestalBase} />
             <div className={styles.orbitLightRing} />
-            <div className={styles.pedestalGlow} />
 
-            {/* Central 3D Purple Gift Box */}
+            {/* Large 3D Purple Gift Box with subtle float and scale pulse */}
             <img
               src={ExclusiveRewardImg || TopRightHeroImg}
-              alt="Daily Streak Rewards 3D Gift"
+              alt="Daily Rewards 3D Gift"
               className={styles.hero3dGiftImg}
             />
 
-            {/* Orbiting Gold Coins with floating animation */}
+            {/* Floating Orbiting Gold Coins */}
             <div className={`${styles.floatingCoinWrap} ${styles.coinPosLeft}`}>
-              <img src={VEsCoinImg} alt="Coin" className={styles.orbitCoinImg} />
+              <img src={VEsCoinImg} alt="" className={styles.orbitCoinImg} />
             </div>
             <div className={`${styles.floatingCoinWrap} ${styles.coinPosRight}`}>
-              <img src={VEsCoinImg} alt="Coin" className={styles.orbitCoinImg} />
+              <img src={VEsCoinImg} alt="" className={styles.orbitCoinImg} />
             </div>
             <div className={`${styles.floatingCoinWrap} ${styles.coinPosTop}`}>
-              <img src={VEsCoinImg} alt="Coin" className={styles.orbitCoinImg} />
+              <img src={VEsCoinImg} alt="" className={styles.orbitCoinImg} />
             </div>
 
-            {/* Sparkles & Star Particles */}
+            {/* Ambient Sparkles & Light Dust */}
             <span className={`${styles.heroSparkle} ${styles.spTopRight}`}>✦</span>
             <span className={`${styles.heroSparkle} ${styles.spBottomLeft}`}>★</span>
             <span className={`${styles.heroSparkle} ${styles.spCenterRight}`}>✦</span>
+            <span className={`${styles.heroSparkle} ${styles.spCenterLeft}`}>✨</span>
           </div>
         </div>
       </div>

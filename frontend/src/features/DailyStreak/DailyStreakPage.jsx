@@ -11,6 +11,7 @@ import {
 import { isDemoMode, mockStreakHistory, mockStreakResponse } from '../../services/mockStreak.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { TopRightHeroImg, VEsCoinImg } from '../../assets/veloop/index.js';
+import AtmosphericDecorations from './AtmosphericDecorations.jsx';
 import CpaDemo from './CpaDemo.jsx';
 import HeroBanner from './HeroBanner.jsx';
 import RecentActivityAndBenefits from './RecentActivityAndBenefits.jsx';
@@ -251,29 +252,8 @@ function DailyStreakPage() {
 
   return (
     <div className={styles.pageShell}>
-      {/* 1. Cinematic Background Atmosphere (Floating coins, gift boxes, stars & glowing orbs) */}
-      <div className={styles.cinematicAtmosphere} aria-hidden="true">
-        {/* Slow-moving glowing orbs */}
-        <div className={`${styles.ambientOrb} ${styles.orb1}`} />
-        <div className={`${styles.ambientOrb} ${styles.orb2}`} />
-        <div className={`${styles.ambientOrb} ${styles.orb3}`} />
-
-        {/* Ambient floating 3D coins blurred in background */}
-        <img src={VEsCoinImg} alt="" className={`${styles.bgFloatingAsset} ${styles.bgCoin1}`} />
-        <img src={VEsCoinImg} alt="" className={`${styles.bgFloatingAsset} ${styles.bgCoin2}`} />
-        <img src={VEsCoinImg} alt="" className={`${styles.bgFloatingAsset} ${styles.bgCoin3}`} />
-
-        {/* Ambient floating 3D gift box */}
-        <img src={TopRightHeroImg} alt="" className={`${styles.bgFloatingAsset} ${styles.bgGift1}`} />
-
-        {/* Twinkling star particles */}
-        <span className={`${styles.ambientStar} ${styles.star1}`}>✦</span>
-        <span className={`${styles.ambientStar} ${styles.star2}`}>★</span>
-        <span className={`${styles.ambientStar} ${styles.star3}`}>✦</span>
-        <span className={`${styles.ambientStar} ${styles.star4}`}>★</span>
-        <span className={`${styles.ambientStar} ${styles.star5}`}>✦</span>
-        <span className={`${styles.ambientStar} ${styles.star6}`}>★</span>
-      </div>
+      {/* 1. Cinematic Background Atmosphere (Floating 3D reward stickers, stars & glowing orbs) */}
+      <AtmosphericDecorations />
 
       {/* 2. Top Navbar with branding, nav links, coin pill & user menu */}
       <StreakHeader

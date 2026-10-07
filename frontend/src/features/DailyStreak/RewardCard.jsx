@@ -60,11 +60,11 @@ function RewardCard({ card, countdown, onSelect }) {
   const amountStr = card.reward?.amount ? Math.round(Number(card.reward.amount)) : '';
   const displayValue = card.reward?.rewardType === 'GIFT_CARD'
     ? `₹${amountStr}`
-    : `+${amountStr}`;
+    : `+${amountStr} VEs`;
 
   const subtitle = card.reward?.rewardType === 'GIFT_CARD'
     ? 'Amazon Gift Card'
-    : `${amountStr} VEs`;
+    : 'Wallet Credit';
 
   const title = day === 7 ? 'Grand Prize' : day === 4 ? 'Milestone Reward' : 'Daily Reward';
 
@@ -77,10 +77,12 @@ function RewardCard({ card, countdown, onSelect }) {
       } ${isDay4 ? styles.cardMilestone4 : ''} ${isDay7 ? styles.cardMilestone7 : ''}`}
       aria-label={`Day ${day}: ${title}`}
     >
-      {/* Ambient Radial Glow Effect */}
+      {/* Ambient Radial Glow Effect & Light Shine Sweep */}
       <div className={styles.cardAuraGlow} />
+      {isActionable && <div className={styles.cardActiveShineSweep} />}
+      {isClaimed && <div className={styles.cardSuccessRing} />}
 
-      {/* Card Header (Day Number + Badge) */}
+      {/* Card Header (Day Number + State Badge) */}
       <div className={styles.cardHeader}>
         <span className={styles.cardDayLabel}>Day {day}</span>
 
@@ -92,25 +94,25 @@ function RewardCard({ card, countdown, onSelect }) {
 
         {badge && badge.type === 'text' && (
           <span className={`${styles.cardBadgePill} ${badge.className}`}>
-            {badge.icon && <badge.icon size={10} className={styles.badgeIcon} />}
+            {badge.icon && <badge.icon size={11} className={styles.badgeIcon} />}
             {badge.label}
           </span>
         )}
       </div>
 
-      {/* Card Artwork with Pedestal Halo */}
+      {/* Card Artwork with Pedestal Halo & Floating Motion */}
       <div className={styles.cardImgWrap}>
         <div className={styles.cardPedestalHalo} />
         <img
           src={cardImg}
           alt={`Day ${day} reward`}
           className={`${styles.cardImg} ${isClaimed ? styles.claimedImg : ''} ${
-            !isActionable && !isClaimed ? styles.lockedImg : ''
-          }`}
+            isActionable ? styles.activeCardImg : ''
+          } ${!isActionable && !isClaimed ? styles.lockedImg : ''}`}
         />
       </div>
 
-      {/* Card Value Content */}
+      {/* Card Value Content (Visually Dominant) */}
       <div className={styles.cardTextContent}>
         <span className={styles.cardRewardTitle}>{title}</span>
         <div className={`${styles.cardHighlightValue} ${valueColorClass}`}>
