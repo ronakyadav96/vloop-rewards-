@@ -11,6 +11,7 @@ import { isDemoMode, mockStreakResponse } from '../../services/mockStreak.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import CpaDemo from './CpaDemo.jsx';
 import HeroBanner from './HeroBanner.jsx';
+import RewardFlyAnimation from './RewardFlyAnimation.jsx';
 import RewardGrid from './RewardGrid.jsx';
 import StreakHeader from './StreakHeader.jsx';
 import StreakLoader from './StreakLoader.jsx';
@@ -151,6 +152,16 @@ function DailyStreakPage() {
     [status]
   );
 
+  const [flyData, setFlyData] = useState(null);
+  const [walletCelebrating, setWalletCelebrating] = useState(false);
+
+  const handleFlyComplete = useCallback(() => {
+    setWalletCelebrating(true);
+    setTimeout(() => {
+      setWalletCelebrating(false);
+    }, 1400);
+  }, []);
+
   const handleClaim = async () => {
     if (!claimCard || claiming) return;
     if (isDemoMode()) {
@@ -159,15 +170,37 @@ function DailyStreakPage() {
       return;
     }
 
+    const currentClaim = claimCard;
+    const sourceEl = document.querySelector(`[data-day="${currentClaim.day}"]`) || document.getElementById('streak-grid');
+    const startRect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+    const walletEl = document.getElementById('navbar-wallet-pill');
+    const endRect = walletEl ? walletEl.getBoundingClientRect() : null;
+
     setClaiming(true);
     try {
       const response = await claimDailyStreak();
       setClaimCard(null);
+
+      // Trigger reward pop & flight animation
+      if (startRect && endRect) {
+        setFlyData({
+          active: true,
+          startX: Math.round(startRect.left + startRect.width / 2),
+          startY: Math.round(startRect.top + startRect.height / 2),
+          endX: Math.round(endRect.left + endRect.width / 2),
+          endY: Math.round(endRect.top + endRect.height / 2),
+          day: currentClaim.day,
+          rewardType: currentClaim.reward?.rewardType,
+          amount: currentClaim.reward?.amount,
+          title: response?.claim?.reward?.title,
+        });
+      }
+
       await loadStatus();
       setNotice({
         type: 'success',
         message: response?.claim?.reward?.title
-          ? `${response.claim.reward.title} confirmed by the backend.`
+          ? `${response.claim.reward.title} claimed! Added to your wallet.`
           : 'Reward claim confirmed by the backend.',
       });
     } catch (requestError) {
@@ -189,11 +222,24 @@ function DailyStreakPage() {
 
   return (
     <div className={styles.pageShell}>
-      {/* Navbar matching Page 62 & 63 */}
+      {/* 1. Alive Cinematic Background: Star/Orb Atmosphere */}
+      <div className={styles.cinematicAtmosphere} aria-hidden="true">
+        <div className={`${styles.ambientOrb} ${styles.orb1}`} />
+        <div className={`${styles.ambientOrb} ${styles.orb2}`} />
+        <div className={`${styles.ambientOrb} ${styles.orb3}`} />
+        <span className={`${styles.ambientStar} ${styles.star1}`}>✦</span>
+        <span className={`${styles.ambientStar} ${styles.star2}`}>★</span>
+        <span className={`${styles.ambientStar} ${styles.star3}`}>✦</span>
+        <span className={`${styles.ambientStar} ${styles.star4}`}>★</span>
+        <span className={`${styles.ambientStar} ${styles.star5}`}>✦</span>
+      </div>
+
+      {/* 2. Navbar with wallet celebrate reaction */}
       <StreakHeader
         onBack={() => window.history.back()}
         wallet={status.wallet}
         onLogout={handleLogout}
+        isCelebrating={walletCelebrating}
       />
 
       {isDemoMode() && (
@@ -234,7 +280,7 @@ function DailyStreakPage() {
           </div>
         </section>
 
-        {/* 7 Daily Reward Cards */}
+        {/* 7 Daily Reward Cards with Centerpiece Milestone Progress */}
         <RewardGrid
           cards={status.cards}
           countdown={countdown.label}
@@ -255,6 +301,9 @@ function DailyStreakPage() {
         onClose={() => !claiming && setClaimCard(null)}
         onConfirm={handleClaim}
       />
+
+      {/* Reward Collection Flying Animation (Smooth Flight to Navbar) */}
+      <RewardFlyAnimation flyData={flyData} onComplete={handleFlyComplete} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ChevronLeft, LogOut } from 'lucide-react';
 import { FlameImg } from '../../assets/veloop/index.js';
 import styles from './DailyStreak.module.css';
@@ -36,7 +37,34 @@ function GemIcon({ size = 18, className }) {
   );
 }
 
-function StreakHeader({ onBack, wallet, onLogout }) {
+function AnimatedNumber({ value }) {
+  const [displayValue, setDisplayValue] = useState(value);
+
+  useEffect(() => {
+    let start = displayValue;
+    const end = value;
+    if (start === end) return;
+
+    const duration = 650;
+    const startTime = performance.now();
+
+    const step = (now) => {
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + (end - start) * eased);
+      setDisplayValue(current);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+    const animId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animId);
+  }, [value, displayValue]);
+
+  return <>{displayValue}</>;
+}
+
+function StreakHeader({ onBack, wallet, onLogout, isCelebrating }) {
   const balance = wallet?.balance !== undefined && wallet?.balance !== null
     ? Math.round(Number(wallet.balance))
     : 120;
@@ -62,9 +90,16 @@ function StreakHeader({ onBack, wallet, onLogout }) {
         </div>
 
         <div className={styles.headerRightActions}>
-          <div className={styles.headerGemPill} title={`Wallet Balance: ${wallet?.balance ?? 0} ${wallet?.currency ?? 'VEs'}`}>
+          <div
+            id="navbar-wallet-pill"
+            className={`${styles.headerGemPill} ${isCelebrating ? styles.walletCelebrating : ''}`}
+            title={`Wallet Balance: ${wallet?.balance ?? 0} ${wallet?.currency ?? 'VEs'}`}
+          >
+            {isCelebrating && <div className={styles.walletShockwave} />}
             <GemIcon size={16} className={styles.headerGemSvg} />
-            <span className={styles.gemCount}>{balance}</span>
+            <span className={styles.gemCount}>
+              <AnimatedNumber value={balance} />
+            </span>
           </div>
 
           {onLogout && (

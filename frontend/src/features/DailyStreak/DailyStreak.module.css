@@ -763,47 +763,74 @@
 }
 
 /* --------------------------------------------------------------------------
-   ANIMATED STREAK JOURNEY & REWARD MILESTONES TRACKER
+   ANIMATED STREAK JOURNEY & REWARD MILESTONES TRACKER (CENTERPIECE)
    -------------------------------------------------------------------------- */
 .journeyTrackerCard {
-  background: linear-gradient(135deg, rgba(28, 10, 58, 0.75) 0%, rgba(15, 5, 36, 0.85) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  border-radius: 20px;
-  padding: 18px 22px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(145deg, rgba(32, 12, 68, 0.88) 0%, rgba(18, 6, 42, 0.92) 55%, rgba(10, 3, 24, 0.95) 100%);
+  border: 1.5px solid rgba(192, 132, 252, 0.42);
+  border-radius: 22px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  box-shadow: 
+    0 16px 45px rgba(0, 0, 0, 0.5),
+    0 0 35px rgba(147, 51, 234, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.journeyTrackerCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #a855f7 30%, #facc15 65%, transparent 100%);
+  pointer-events: none;
 }
 
 .trackerHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .trackerTitleBlock {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .trackerFlameIconWrap {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(234, 88, 12, 0.25), rgba(250, 204, 21, 0.25));
-  border: 1px solid rgba(250, 204, 21, 0.45);
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.3), rgba(250, 204, 21, 0.3));
+  border: 1.5px solid rgba(250, 204, 21, 0.6);
   display: grid;
   place-items: center;
-  box-shadow: 0 0 16px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.45);
 }
 
 .trackerFlameSvg {
   color: #facc15;
-  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.9));
   animation: flameGlowAnim 2.5s ease-in-out infinite;
+}
+
+.trackerTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 950;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #ffffff 0%, #fef08a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .trackerTagRow {
@@ -877,33 +904,35 @@
 
 .railTrackBackground {
   position: absolute;
-  top: 14px;
-  left: 10px;
-  right: 10px;
-  height: 6px;
+  top: 15px;
+  left: 12px;
+  right: 12px;
+  height: 8px;
   border-radius: 999px;
-  background: rgba(168, 85, 247, 0.18);
+  background: rgba(168, 85, 247, 0.16);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
   overflow: hidden;
 }
 
 .railTrackFill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #8b5cf6 0%, #d946ef 50%, #facc15 100%);
+  background: linear-gradient(90deg, #10b981 0%, #f59e0b 45%, #a855f7 80%, #ec4899 100%);
   position: relative;
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 14px rgba(250, 204, 21, 0.6);
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.8), 0 0 24px rgba(249, 115, 22, 0.6);
 }
 
 .railGlowLeadingEdge {
   position: absolute;
-  right: -2px;
-  top: -3px;
-  bottom: -3px;
-  width: 12px;
+  right: -3px;
+  top: -4px;
+  bottom: -4px;
+  width: 16px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 12px #facc15, 0 0 20px #f59e0b;
+  box-shadow: 0 0 14px #ffffff, 0 0 22px #facc15, 0 0 35px #f59e0b;
+  animation: pulseBeaconAnim 1.8s infinite;
 }
 
 .railNodesRow {
@@ -969,17 +998,18 @@
 }
 
 .nodeCircle {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: #190a36;
-  border: 2px solid rgba(168, 85, 247, 0.4);
+  background: #170732;
+  border: 2px solid rgba(168, 85, 247, 0.45);
   display: grid;
   place-items: center;
   color: #a78bfa;
-  font-size: 0.72rem;
-  font-weight: 800;
-  transition: all 0.25s ease;
+  font-size: 0.76rem;
+  font-weight: 850;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .nodeDayNum {
@@ -990,7 +1020,7 @@
   background: #22c55e;
   border-color: #86efac;
   color: #ffffff;
-  box-shadow: 0 0 14px rgba(34, 197, 94, 0.7);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.8), 0 0 24px rgba(34, 197, 94, 0.4);
 }
 
 .nodeCheckIcon {
@@ -998,7 +1028,7 @@
 }
 
 .railNodeCurrent .nodeCircle {
-  background: #facc15;
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #f59e0b 100%);
   border-color: #ffffff;
   color: #1e093a;
   box-shadow: 0 0 18px rgba(250, 204, 21, 0.8), 0 0 30px rgba(249, 115, 22, 0.5);
@@ -1183,6 +1213,7 @@
     0 12px 30px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  animation: cardEntranceAnim 0.55s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--cardIndex, 0) * 0.07s) backwards;
 }
 
 .cardAuraGlow {
@@ -2483,3 +2514,395 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   1. CINEMATIC BACKGROUND ATMOSPHERE (STARS & FLOATING ORBS)
+   ========================================================================== */
+.cinematicAtmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambientOrb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.orb1 {
+  width: 420px;
+  height: 420px;
+  top: -80px;
+  left: 10%;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.45) 0%, rgba(126, 34, 206, 0.1) 70%, transparent 100%);
+  animation: orbDrift1 18s ease-in-out infinite alternate;
+}
+
+.orb2 {
+  width: 460px;
+  height: 460px;
+  top: 35%;
+  right: -60px;
+  background: radial-gradient(circle, rgba(234, 88, 12, 0.28) 0%, rgba(217, 119, 6, 0.08) 70%, transparent 100%);
+  animation: orbDrift2 22s ease-in-out infinite alternate;
+}
+
+.orb3 {
+  width: 500px;
+  height: 500px;
+  bottom: 5%;
+  left: -80px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(79, 70, 229, 0.08) 70%, transparent 100%);
+  animation: orbDrift3 25s ease-in-out infinite alternate;
+}
+
+.ambientStar {
+  position: absolute;
+  color: #facc15;
+  font-size: 0.85rem;
+  pointer-events: none;
+  opacity: 0.4;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
+  animation: starTwinkle 4s ease-in-out infinite;
+}
+
+.star1 { top: 120px; left: 8%; animation-delay: 0s; font-size: 1rem; }
+.star2 { top: 220px; right: 12%; animation-delay: 1.2s; font-size: 0.75rem; color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.8); }
+.star3 { top: 480px; left: 14%; animation-delay: 2.1s; font-size: 0.9rem; }
+.star4 { top: 620px; right: 8%; animation-delay: 0.8s; font-size: 0.8rem; }
+.star5 { top: 780px; left: 22%; animation-delay: 2.8s; font-size: 0.7rem; color: #f472b6; text-shadow: 0 0 8px rgba(244, 114, 182, 0.8); }
+
+@keyframes orbDrift1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.08); }
+  100% { transform: translate(-20px, 50px) scale(0.95); }
+}
+
+@keyframes orbDrift2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, -30px) scale(1.12); }
+  100% { transform: translate(-25px, 40px) scale(0.92); }
+}
+
+@keyframes orbDrift3 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(35px, -45px) scale(1.05); }
+  100% { transform: translate(60px, -20px) scale(0.96); }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.9); }
+  50% { opacity: 0.85; transform: scale(1.25) rotate(15deg); }
+}
+
+/* ==========================================================================
+   2. REWARD COLLECTION FLIGHT ANIMATION OVERLAY
+   ========================================================================== */
+.flyAnimationOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Burst Particles at Spawn Point */
+.flyBurstWrap {
+  position: fixed;
+  left: var(--startX, 50vw);
+  top: var(--startY, 50vh);
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flyHaloSunburst {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.75) 0%, rgba(168, 85, 247, 0.45) 50%, transparent 75%);
+  animation: burstHaloAnim 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.flySparkle {
+  position: absolute;
+  font-size: 1.1rem;
+  color: #facc15;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 1);
+  animation: burstParticleAnim 0.65s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+.sp1 { --tx: -55px; --ty: -50px; color: #facc15; font-size: 1.3rem; }
+.sp2 { --tx: 60px; --ty: -45px; color: #f472b6; font-size: 1rem; }
+.sp3 { --tx: -65px; --ty: 30px; color: #c084fc; font-size: 1.2rem; }
+.sp4 { --tx: 55px; --ty: 40px; color: #fde047; font-size: 0.9rem; }
+.sp5 { --tx: 0px; --ty: -75px; color: #60a5fa; font-size: 1.1rem; }
+.sp6 { --tx: 10px; --ty: 70px; color: #a78bfa; font-size: 1rem; }
+
+@keyframes burstHaloAnim {
+  0% { transform: scale(0.3); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes burstParticleAnim {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Flying Asset Container */
+.flyingAssetContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.flyingAssetImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.95)) drop-shadow(0 0 35px rgba(168, 85, 247, 0.8));
+}
+
+.flyingTrailGlow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.8) 0%, rgba(168, 85, 247, 0.4) 60%, transparent 80%);
+  filter: blur(8px);
+  z-index: -1;
+  animation: trailPulse 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes trailPulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+/* Phase 1: Spawning pop at start point */
+.spawningActive {
+  transform: translate(calc(var(--startX) - 34px), calc(var(--startY) - 34px)) scale(1);
+  animation: spawnPopAnim 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes spawnPopAnim {
+  0% {
+    transform: translate(calc(var(--startX) - 34px), calc(var(--startY) - 34px)) scale(0.2);
+    opacity: 0;
+  }
+  70% {
+    transform: translate(calc(var(--startX) - 34px), calc(var(--startY) - 34px)) scale(1.35);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--startX) - 34px), calc(var(--startY) - 34px)) scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* Phase 2: Flying along trajectory to navbar */
+.flyingActive {
+  animation: flyToWalletAnim 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes flyToWalletAnim {
+  0% {
+    transform: translate(calc(var(--startX) - 34px), calc(var(--startY) - 34px)) scale(1.15) rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(
+      calc(var(--startX) + (var(--endX) - var(--startX)) * 0.45 - 34px),
+      calc(var(--startY) + (var(--endY) - var(--startY)) * 0.3 - 60px)
+    ) scale(1.05) rotate(12deg);
+    opacity: 1;
+  }
+  85% {
+    transform: translate(
+      calc(var(--startX) + (var(--endX) - var(--startX)) * 0.88 - 24px),
+      calc(var(--startY) + (var(--endY) - var(--startY)) * 0.88 - 24px)
+    ) scale(0.65) rotate(-6deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(calc(var(--endX) - 16px), calc(var(--endY) - 16px)) scale(0.25) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+/* Floating Success Toast Banner */
+.flySuccessBanner {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, rgba(35, 12, 70, 0.95) 0%, rgba(18, 6, 42, 0.98) 100%);
+  border: 1.5px solid rgba(250, 204, 21, 0.7);
+  border-radius: 999px;
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(250, 204, 21, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10001;
+  pointer-events: none;
+  animation: bannerSlideInOut 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.bannerSparkle {
+  color: #facc15;
+  font-size: 1rem;
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.9));
+  animation: sparkleRotate 2s linear infinite;
+}
+
+@keyframes sparkleRotate {
+  0% { transform: rotate(0deg) scale(0.9); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(0.9); }
+}
+
+.bannerTextWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.bannerKicker {
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #facc15;
+  text-transform: uppercase;
+}
+
+.bannerReward {
+  font-size: 1rem;
+  font-weight: 950;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+@keyframes bannerSlideInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.02);
+  }
+  25% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -15px) scale(0.95);
+  }
+}
+
+/* ==========================================================================
+   3. NAVBAR WALLET CELEBRATING & SHOCKWAVE
+   ========================================================================== */
+.walletCelebrating {
+  animation: walletBounceAnim 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 30px rgba(250, 204, 21, 0.75), 0 0 50px rgba(168, 85, 247, 0.6) !important;
+}
+
+.walletShockwave {
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 2px solid #facc15;
+  pointer-events: none;
+  animation: walletShockwaveAnim 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes walletBounceAnim {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.28) rotate(-4deg); }
+  55% { transform: scale(0.92) rotate(2deg); }
+  75% { transform: scale(1.08) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes walletShockwaveAnim {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+    border-color: #facc15;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+    border-color: rgba(168, 85, 247, 0);
+  }
+}
+
+/* ==========================================================================
+   4. CARD ENTRANCE ANIMATION KEYFRAME
+   ========================================================================== */
+@keyframes cardEntranceAnim {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   5. REDUCED MOTION PREFERENCES
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .cinematicAtmosphere,
+  .flyHaloSunburst,
+  .flySparkle,
+  .flyingTrailGlow,
+  .walletShockwave {
+    animation: none !important;
+  }
+  .rewardCard {
+    animation: none !important;
+  }
+  .flyingActive,
+  .spawningActive {
+    animation-duration: 0.01ms !important;
+  }
+}
+

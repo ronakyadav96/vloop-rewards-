@@ -66,6 +66,8 @@ function RewardCard({ card, countdown, onSelect }) {
 
   return (
     <article
+      data-day={day}
+      style={{ '--cardIndex': day - 1 }}
       className={`${styles.rewardCard} ${isActionable ? styles.cardActive : ''} ${
         isClaimed ? styles.cardClaimed : ''
       } ${isDay4 ? styles.cardMilestone4 : ''} ${isDay7 ? styles.cardMilestone7 : ''}`}
