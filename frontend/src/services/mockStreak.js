@@ -33,6 +33,27 @@ export const mockStreakResponse = {
   wallet: { currency: 'VE', balance: '15' },
 };
 
+export const mockStreakHistory = {
+  success: true,
+  claims: [
+    {
+      id: 'mock-claim-2',
+      day: 2,
+      reward: { day: 2, amount: '10', title: '+10 VEs', rewardType: 'VE' },
+      status: 'SUCCESS',
+      claimedAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+    },
+    {
+      id: 'mock-claim-1',
+      day: 1,
+      reward: { day: 1, amount: '5', title: '+5 VEs', rewardType: 'VE' },
+      status: 'SUCCESS',
+      claimedAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
+    },
+  ],
+  count: 2,
+};
+
 export function isDemoMode() {
   return import.meta.env.VITE_STREAK_DEMO === 'true';
 }

@@ -3,14 +3,16 @@ import {
   Day4BoxImg,
   Day5AmazonImg,
   Day7CrownImg,
+  TopRightHeroImg,
   VEsCoinImg,
 } from '../../assets/veloop/index.js';
 import styles from './DailyStreak.module.css';
 
 function getCardImage(dayNumber) {
   if (dayNumber === 7) return Day7CrownImg;
-  if (dayNumber === 4) return Day4BoxImg;
   if (dayNumber === 5) return Day5AmazonImg;
+  if (dayNumber === 4) return Day4BoxImg;
+  if (dayNumber === 2) return TopRightHeroImg;
   return VEsCoinImg;
 }
 
@@ -21,21 +23,24 @@ function getBadge(dayNumber, state) {
   if (state === 'TODAY' || state === 'AVAILABLE') {
     return { type: 'text', label: 'Today', className: styles.badgeToday, icon: Flame };
   }
+  if (dayNumber === 4) {
+    return { type: 'text', label: 'Milestone', className: styles.badgeMilestone, icon: Gift };
+  }
   if (dayNumber === 5) {
     return { type: 'text', label: 'Gift Card', className: styles.badgeGiftCard, icon: Gift };
   }
   if (dayNumber === 6) {
-    return { type: 'text', label: 'Coin', className: styles.badgeCoin, icon: Sparkles };
+    return { type: 'text', label: 'Coin Boost', className: styles.badgeCoin, icon: Sparkles };
   }
   if (dayNumber === 7) {
-    return { type: 'text', label: 'VIP', className: styles.badgeVip, icon: Trophy };
+    return { type: 'text', label: 'VIP Crown', className: styles.badgeVip, icon: Trophy };
   }
   return null;
 }
 
 function getValueColorClass(dayNumber, state) {
   if (state === 'CLAIMED') return styles.valueGreen;
-  if (state === 'TODAY' || state === 'AVAILABLE' || dayNumber === 2) return styles.valueGold;
+  if (state === 'TODAY' || state === 'AVAILABLE') return styles.valueGold;
   if (dayNumber === 7) return styles.valueGold;
   return styles.valueNormal;
 }
@@ -52,7 +57,6 @@ function RewardCard({ card, countdown, onSelect }) {
   const cardImg = getCardImage(day);
   const valueColorClass = getValueColorClass(day, state);
 
-  // Values and subtitles
   const amountStr = card.reward?.amount ? Math.round(Number(card.reward.amount)) : '';
   const displayValue = card.reward?.rewardType === 'GIFT_CARD'
     ? `₹${amountStr}`
@@ -62,7 +66,7 @@ function RewardCard({ card, countdown, onSelect }) {
     ? 'Amazon Gift Card'
     : `${amountStr} VEs`;
 
-  const title = day === 7 ? 'Ultimate Reward' : 'Daily Reward';
+  const title = day === 7 ? 'Grand Prize' : day === 4 ? 'Milestone Reward' : 'Daily Reward';
 
   return (
     <article

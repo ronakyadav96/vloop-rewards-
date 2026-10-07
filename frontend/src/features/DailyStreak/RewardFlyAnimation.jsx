@@ -29,18 +29,18 @@ function RewardFlyAnimation({ flyData, onComplete }) {
     // Phase 2: Flight toward navbar
     const flyTimer = setTimeout(() => {
       setStage('flying');
-    }, 350);
+    }, 320);
 
     // Phase 3: Impact at navbar wallet
     const impactTimer = setTimeout(() => {
       setStage('impact');
       if (onComplete) onComplete();
-    }, 1100);
+    }, 1050);
 
     // Phase 4: Clean up
     const doneTimer = setTimeout(() => {
       setStage('done');
-    }, 2200);
+    }, 2400);
 
     return () => {
       clearTimeout(flyTimer);
@@ -55,8 +55,22 @@ function RewardFlyAnimation({ flyData, onComplete }) {
 
   const { startX, startY, endX, endY, day, rewardType, amount, title } = flyData;
   const asset = getRewardAsset(day, rewardType);
-  const isGift = rewardType === 'GIFT_CARD' || day === 4 || day === 5 || day === 7;
-  const displayText = title || (isGift ? `₹${amount} Gift Card` : `+${amount} VEs`);
+  const isCrown = day === 7;
+  const isGiftCard = rewardType === 'GIFT_CARD' || day === 4 || day === 5;
+  const isCoinReward = !isCrown && !isGiftCard;
+
+  const kickerText = isCrown
+    ? '👑 GRAND PRIZE UNLOCKED!'
+    : isGiftCard
+      ? '🎁 GIFT CARD COLLECTED!'
+      : '✦ REWARD COLLECTED!';
+
+  const displayText = title
+    || (isCrown
+      ? 'Day 7 VIP Crown ₹5 Amazon Gift Card'
+      : isGiftCard
+        ? `₹${amount} Amazon Gift Card`
+        : `+${amount} VEs Added to Wallet`);
 
   const dynamicStyle = {
     '--startX': `${startX}px`,
@@ -70,34 +84,57 @@ function RewardFlyAnimation({ flyData, onComplete }) {
       {/* 1. Sparkle Particles Burst around spawn location */}
       {stage === 'spawning' && (
         <div className={styles.flyBurstWrap}>
-          <div className={styles.flyHaloSunburst} />
+          <div className={`${styles.flyHaloSunburst} ${isCrown ? styles.sunburstGold : isGiftCard ? styles.sunburstPurple : ''}`} />
           <span className={`${styles.flySparkle} ${styles.sp1}`}>✦</span>
           <span className={`${styles.flySparkle} ${styles.sp2}`}>★</span>
           <span className={`${styles.flySparkle} ${styles.sp3}`}>✦</span>
           <span className={`${styles.flySparkle} ${styles.sp4}`}>★</span>
           <span className={`${styles.flySparkle} ${styles.sp5}`}>✦</span>
           <span className={`${styles.flySparkle} ${styles.sp6}`}>★</span>
+          {isCrown && (
+            <>
+              <span className={`${styles.flySparkle} ${styles.spCrown1}`}>👑</span>
+              <span className={`${styles.flySparkle} ${styles.spCrown2}`}>✨</span>
+            </>
+          )}
         </div>
       )}
 
-      {/* 2. The Flying Reward Asset */}
+      {/* 2. The Flying Reward Asset(s) */}
       {(stage === 'spawning' || stage === 'flying') && (
-        <div
-          className={`${styles.flyingAssetContainer} ${
-            stage === 'flying' ? styles.flyingActive : styles.spawningActive
-          }`}
-        >
-          <div className={styles.flyingTrailGlow} />
-          <img src={asset} alt="Reward" className={styles.flyingAssetImg} />
-        </div>
+        <>
+          {/* Main Flying Asset */}
+          <div
+            className={`${styles.flyingAssetContainer} ${
+              stage === 'flying' ? styles.flyingActive : styles.spawningActive
+            } ${isCrown ? styles.flyingCrownSpecial : ''}`}
+          >
+            <div className={`${styles.flyingTrailGlow} ${isCrown ? styles.trailGold : ''}`} />
+            <img src={asset} alt="Reward" className={styles.flyingAssetImg} />
+          </div>
+
+          {/* Multiple Emerging Coins for VE Coin Rewards (Staggered Trajectory) */}
+          {isCoinReward && stage === 'flying' && (
+            <>
+              <div className={`${styles.flyingAssetContainer} ${styles.flyingActive} ${styles.flyingCoinFollower1}`}>
+                <div className={styles.flyingTrailGlow} />
+                <img src={VEsCoinImg} alt="" className={styles.flyingMiniCoinImg} />
+              </div>
+              <div className={`${styles.flyingAssetContainer} ${styles.flyingActive} ${styles.flyingCoinFollower2}`}>
+                <div className={styles.flyingTrailGlow} />
+                <img src={VEsCoinImg} alt="" className={styles.flyingMiniCoinImg} />
+              </div>
+            </>
+          )}
+        </>
       )}
 
-      {/* 3. Floating Success Toast ("Reward Collected!") */}
+      {/* 3. Floating Celebration Toast ("Reward Collected!" / "Grand Prize Unlocked!") */}
       {(stage === 'flying' || stage === 'impact') && (
-        <div className={styles.flySuccessBanner}>
+        <div className={`${styles.flySuccessBanner} ${isCrown ? styles.bannerGoldPrize : ''}`}>
           <span className={styles.bannerSparkle}>✦</span>
           <div className={styles.bannerTextWrap}>
-            <span className={styles.bannerKicker}>REWARD COLLECTED!</span>
+            <span className={styles.bannerKicker}>{kickerText}</span>
             <strong className={styles.bannerReward}>{displayText}</strong>
           </div>
           <span className={styles.bannerSparkle}>✦</span>

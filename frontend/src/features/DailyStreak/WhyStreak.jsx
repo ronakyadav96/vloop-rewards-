@@ -1,61 +1,63 @@
-import { Sparkles } from 'lucide-react';
-import {
-  BiggerStreakImg,
-  ExclusiveRewardImg,
-  StayActiveImg,
-  TrustShieldImg,
-} from '../../assets/veloop/index.js';
+import { Calendar, Gift, Trophy, Zap } from 'lucide-react';
 import styles from './DailyStreak.module.css';
 
-const benefits = [
+const benefitsData = [
   {
-    icon: StayActiveImg,
-    title: 'Stay Active',
-    desc: 'Keep your streak alive & earn more!',
-    accentClass: styles.benefitStayActive,
+    icon: Calendar,
+    title: 'Daily Check-In',
+    desc: 'Check in daily and keep your streak alive.',
+    plateClass: styles.benefitPlatePurple,
+    iconClass: styles.benefitIconPurple,
   },
   {
-    icon: BiggerStreakImg,
-    title: 'Bigger Streak',
-    desc: 'More consecutive logins, bigger rewards!',
-    accentClass: styles.benefitBiggerStreak,
+    icon: Zap,
+    title: 'Bigger Rewards',
+    desc: 'Longer streaks unlock increasingly better rewards.',
+    plateClass: styles.benefitPlateGold,
+    iconClass: styles.benefitIconGold,
   },
   {
-    icon: ExclusiveRewardImg,
+    icon: Gift,
     title: 'Exclusive Rewards',
-    desc: 'Get coins, gift cards & special bonuses!',
-    accentClass: styles.benefitExclusive,
+    desc: 'Collect VEs, Amazon gift cards and special bonuses.',
+    plateClass: styles.benefitPlatePink,
+    iconClass: styles.benefitIconPink,
   },
   {
-    icon: TrustShieldImg,
-    title: "Don't Miss Out",
-    desc: 'Come back every day & unlock all rewards!',
-    accentClass: styles.benefitDontMiss,
+    icon: Trophy,
+    title: 'Ultimate Prize',
+    desc: 'Reach Day 7 to unlock the grand VIP reward.',
+    plateClass: styles.benefitPlateYellow,
+    iconClass: styles.benefitIconYellow,
   },
 ];
 
 function WhyStreak() {
   return (
-    <section className={styles.whyMaintainSection} aria-label="Why Maintain Your Streak">
-      <div className={styles.whyMaintainHeading}>
-        <span className={styles.sparkleIcon}>✦</span>
-        <span>Why Maintain Your Streak?</span>
-        <span className={styles.sparkleIcon}>✦</span>
+    <section className={styles.benefitsSection} aria-label="Benefits of Maintaining Streak">
+      <div className={styles.benefitsHeaderRow}>
+        <div className={styles.benefitsTitleGroup}>
+          <span className={styles.sparkleIcon}>✦</span>
+          <h4 className={styles.benefitsSectionTitle}>Why Maintain Your Streak?</h4>
+          <span className={styles.sparkleIcon}>✦</span>
+        </div>
       </div>
 
-      <div className={styles.benefitsGrid}>
-        {benefits.map((item) => (
-          <div className={`${styles.benefitCard} ${item.accentClass}`} key={item.title}>
-            <div className={styles.benefitIconWrap}>
-              <div className={styles.benefitIconGlow} />
-              <img src={item.icon} alt={item.title} className={styles.benefitImg} />
+      <div className={styles.benefitsGridRow}>
+        {benefitsData.map((item) => {
+          const IconComp = item.icon;
+          return (
+            <div className={styles.benefitCardItem} key={item.title}>
+              <div className={`${styles.benefitIconPlate} ${item.plateClass}`}>
+                <IconComp size={20} strokeWidth={2.3} className={item.iconClass} />
+              </div>
+              <div className={styles.benefitTextWrap}>
+                <strong className={styles.benefitItemTitle}>{item.title}</strong>
+                <p className={styles.benefitItemDesc}>{item.desc}</p>
+              </div>
             </div>
-            <div className={styles.benefitTextWrap}>
-              <strong className={styles.benefitTitle}>{item.title}</strong>
-              <p className={styles.benefitDesc}>{item.desc}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
