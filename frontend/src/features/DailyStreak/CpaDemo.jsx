@@ -1,9 +1,9 @@
-import { Check, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { VEsCoinImg } from '../../assets/veloop/index.js';
-import styles from './DailyStreak.module.css';
+import { ShieldCheck, Sparkles, X } from 'lucide-react';
+import { describeReward, getRewardArt } from './streakFormat.js';
+import styles from './StreakOverlays.module.css';
 
-function CpaDemo({ card, onClose, onConfirm, busy }) {
+function CpaDemo({ card, isFinal, onClose, onConfirm, busy }) {
   const [stage, setStage] = useState('loading'); // 'loading' -> 'verifying' -> 'confirmed'
   const [progress, setProgress] = useState(15);
 
@@ -34,8 +34,7 @@ function CpaDemo({ card, onClose, onConfirm, busy }) {
 
   if (!card) return null;
 
-  const rewardTitle = card.reward?.title || 'Daily Reward';
-  const rewardDesc = card.reward?.description || 'Consistency reward';
+  const reward = describeReward(card.reward);
 
   return (
     <div
@@ -44,13 +43,14 @@ function CpaDemo({ card, onClose, onConfirm, busy }) {
       onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}
     >
       <section
-        className={styles.cpaModal}
+        className={styles.modal}
         role="dialog"
         aria-modal="true"
         aria-labelledby="cpa-demo-title"
+        aria-describedby="cpa-demo-status"
       >
         <button
-          className={styles.modalCloseBtn}
+          className={styles.modalClose}
           type="button"
           onClick={onClose}
           disabled={busy}
@@ -59,50 +59,36 @@ function CpaDemo({ card, onClose, onConfirm, busy }) {
           <X size={18} />
         </button>
 
-        <div className={styles.cpaHeader}>
-          <div className={styles.cpaShieldIcon}>
-            <ShieldCheck size={26} />
-          </div>
-          <span className={styles.cpaSubtitle}>Advertisement / Reward Verification</span>
-          <h2 id="cpa-demo-title" className={styles.cpaTitle}>
-            Preparing your reward...
-          </h2>
-          <p className={styles.cpaPleaseWait}>Please wait...</p>
+        <span className={styles.modalKicker}><ShieldCheck size={16} /> Reward verification</span>
+        <h2 id="cpa-demo-title" className={styles.modalTitle}>Preparing your reward…</h2>
+
+        <div className={styles.modalReward}>
+          <span className={styles.modalArt}>
+            <img src={getRewardArt(card.reward, { isFinal })} alt="" />
+          </span>
+          <span className={styles.modalRewardText}>
+            <small>Day {card.day}</small>
+            <strong>{reward?.full ?? 'Daily reward'}</strong>
+            {card.reward?.description && <span>{card.reward.description}</span>}
+          </span>
         </div>
 
-        {/* Ad simulation card */}
-        <div className={styles.cpaAdPlaceholderCard}>
-          <div className={styles.cpaAdBadgeWrap}>
-            <span className={styles.cpaSponsorBadge}>Sponsored Demo Verification</span>
-            <span className={styles.cpaSecureText}><Sparkles size={12} /> Backend Protected</span>
-          </div>
-
-          <div className={styles.cpaRewardPreview}>
-            <img src={VEsCoinImg} alt="" className={styles.cpaCoinImg} />
-            <div className={styles.cpaRewardMeta}>
-              <strong className={styles.cpaRewardHeading}>Day {card.day}: {rewardTitle}</strong>
-              <span className={styles.cpaRewardSub}>{rewardDesc}</span>
-            </div>
-          </div>
-
-          <div className={styles.cpaProgressBarWrap}>
-            <div
-              className={styles.cpaProgressBarFill}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className={styles.cpaProgressStatus}>
-            <span>{busy ? 'Securing claim on backend ledger…' : 'Verifying check-in requirements…'}</span>
-            <span>{progress}%</span>
-          </div>
+        <div className={styles.modalProgress} aria-hidden="true">
+          <span style={{ width: `${progress}%` }} />
+        </div>
+        <div className={styles.modalStatus} id="cpa-demo-status" role="status">
+          <span>
+            {busy
+              ? 'Securing your claim…'
+              : stage === 'verifying' ? 'Verifying check-in requirements…' : 'Loading sponsored verification…'}
+          </span>
+          <span>{progress}%</span>
         </div>
 
-        <div className={styles.cpaFooterNote}>
-          <small>
-            Demo placeholder state matching VELoop theme. Actual rewards and wallet updates are verified by MongoDB transactions.
-          </small>
-        </div>
+        <p className={styles.modalNote}>
+          <Sparkles size={14} />
+          Demo verification step. Your reward and wallet are confirmed by the server.
+        </p>
       </section>
     </div>
   );

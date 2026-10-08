@@ -1,144 +1,97 @@
 import { useEffect, useState } from 'react';
-import {
-  Day4BoxImg,
-  Day5AmazonImg,
-  Day7CrownImg,
-  VEsCoinImg,
-} from '../../assets/veloop/index.js';
-import styles from './DailyStreak.module.css';
+import { VEsCoinImg } from '../../assets/veloop/index.js';
+import Sparkle from './Sparkle.jsx';
+import { Check, Gift } from 'lucide-react';
+import { describeReward, isGiftCardReward, prefersReducedMotion } from './streakFormat.js';
+import styles from './StreakOverlays.module.css';
 
-function getRewardAsset(day, rewardType) {
-  if (day === 7) return Day7CrownImg;
-  if (day === 4) return Day4BoxImg;
-  if (day === 5) return Day5AmazonImg;
-  return VEsCoinImg;
-}
+const COIN_COUNT = 7;
+const COIN_STAGGER_MS = 70;
+const COIN_FLIGHT_MS = 800;
+const BURST_RAYS = 10;
 
-function RewardFlyAnimation({ flyData, onComplete }) {
-  const [stage, setStage] = useState('idle'); // 'spawning' | 'flying' | 'impact' | 'done'
+/**
+ * Visual-only feedback played after the backend confirms a claim.
+ * `flyData.reward` is the reward snapshot from the claim response; VE rewards
+ * fly coins into the wallet pill, gift cards (not wallet credits) do not.
+ */
+function RewardFlyAnimation({ flyData, onWalletHit, onFinish }) {
+  const [phase, setPhase] = useState('idle');
 
   useEffect(() => {
-    if (!flyData || !flyData.active) {
-      setStage('idle');
-      return;
+    if (!flyData) {
+      setPhase('idle');
+      return undefined;
     }
 
-    // Phase 1: Spawning & burst at card position
-    setStage('spawning');
+    const creditsWallet = !isGiftCardReward(flyData.reward);
+    const reduced = prefersReducedMotion();
+    const arrival = reduced ? 0 : COIN_FLIGHT_MS + COIN_STAGGER_MS * 2;
+    const timers = [];
 
-    // Phase 2: Flight toward navbar
-    const flyTimer = setTimeout(() => {
-      setStage('flying');
-    }, 320);
+    setPhase('play');
+    if (creditsWallet) timers.push(setTimeout(() => onWalletHit?.(), arrival));
+    timers.push(setTimeout(() => setPhase('toast'), reduced ? 0 : COIN_FLIGHT_MS + COIN_STAGGER_MS * COIN_COUNT));
+    timers.push(setTimeout(() => onFinish?.(), reduced ? 2600 : 3600));
+    return () => timers.forEach(clearTimeout);
+  }, [flyData, onWalletHit, onFinish]);
 
-    // Phase 3: Impact at navbar wallet
-    const impactTimer = setTimeout(() => {
-      setStage('impact');
-      if (onComplete) onComplete();
-    }, 1050);
+  if (!flyData || phase === 'idle') return null;
 
-    // Phase 4: Clean up
-    const doneTimer = setTimeout(() => {
-      setStage('done');
-    }, 2400);
-
-    return () => {
-      clearTimeout(flyTimer);
-      clearTimeout(impactTimer);
-      clearTimeout(doneTimer);
-    };
-  }, [flyData, onComplete]);
-
-  if (!flyData || !flyData.active || stage === 'idle' || stage === 'done') {
-    return null;
-  }
-
-  const { startX, startY, endX, endY, day, rewardType, amount, title } = flyData;
-  const asset = getRewardAsset(day, rewardType);
-  const isCrown = day === 7;
-  const isGiftCard = rewardType === 'GIFT_CARD' || day === 4 || day === 5;
-  const isCoinReward = !isCrown && !isGiftCard;
-
-  const kickerText = isCrown
-    ? '👑 GRAND PRIZE UNLOCKED!'
-    : isGiftCard
-      ? '🎁 GIFT CARD COLLECTED!'
-      : '✦ REWARD COLLECTED!';
-
-  const displayText = title
-    || (isCrown
-      ? 'Day 7 VIP Crown ₹5 Amazon Gift Card'
-      : isGiftCard
-        ? `₹${amount} Amazon Gift Card`
-        : `+${amount} VEs Added to Wallet`);
-
-  const dynamicStyle = {
-    '--startX': `${startX}px`,
-    '--startY': `${startY}px`,
-    '--endX': `${endX}px`,
-    '--endY': `${endY}px`,
-  };
+  const { startX, startY, endX, endY, reward: rewardSnapshot, pending } = flyData;
+  const reward = describeReward(rewardSnapshot);
+  const creditsWallet = !isGiftCardReward(rewardSnapshot);
+  const reduced = prefersReducedMotion();
+  const dx = endX - startX;
+  const dy = endY - startY;
+  // Keep the centred toast inside narrow viewports.
+  const clampX = (x) => Math.min(Math.max(x, 110), window.innerWidth - 110);
 
   return (
-    <div className={styles.flyAnimationOverlay} style={dynamicStyle} aria-hidden="true">
-      {/* 1. Sparkle Particles Burst around spawn location */}
-      {stage === 'spawning' && (
-        <div className={styles.flyBurstWrap}>
-          <div className={`${styles.flyHaloSunburst} ${isCrown ? styles.sunburstGold : isGiftCard ? styles.sunburstPurple : ''}`} />
-          <span className={`${styles.flySparkle} ${styles.sp1}`}>✦</span>
-          <span className={`${styles.flySparkle} ${styles.sp2}`}>★</span>
-          <span className={`${styles.flySparkle} ${styles.sp3}`}>✦</span>
-          <span className={`${styles.flySparkle} ${styles.sp4}`}>★</span>
-          <span className={`${styles.flySparkle} ${styles.sp5}`}>✦</span>
-          <span className={`${styles.flySparkle} ${styles.sp6}`}>★</span>
-          {isCrown && (
-            <>
-              <span className={`${styles.flySparkle} ${styles.spCrown1}`}>👑</span>
-              <span className={`${styles.flySparkle} ${styles.spCrown2}`}>✨</span>
-            </>
-          )}
+    <div className={styles.flyLayer} aria-hidden="true">
+      {!reduced && (
+        <div className={styles.flyBurst} style={{ left: startX, top: startY }}>
+          <span className={styles.flyBurstRing} />
+          {Array.from({ length: BURST_RAYS }, (_, i) => (
+            <Sparkle
+              key={i}
+              className={styles.flyBurstSpark}
+              style={{ '--a': `${(360 / BURST_RAYS) * i}deg`, '--dist': `${70 + (i % 3) * 18}px` }}
+            />
+          ))}
         </div>
       )}
 
-      {/* 2. The Flying Reward Asset(s) */}
-      {(stage === 'spawning' || stage === 'flying') && (
-        <>
-          {/* Main Flying Asset */}
-          <div
-            className={`${styles.flyingAssetContainer} ${
-              stage === 'flying' ? styles.flyingActive : styles.spawningActive
-            } ${isCrown ? styles.flyingCrownSpecial : ''}`}
-          >
-            <div className={`${styles.flyingTrailGlow} ${isCrown ? styles.trailGold : ''}`} />
-            <img src={asset} alt="Reward" className={styles.flyingAssetImg} />
-          </div>
+      {!reduced && creditsWallet && Array.from({ length: COIN_COUNT }, (_, i) => (
+        <span
+          key={i}
+          className={styles.flyCoinX}
+          style={{
+            left: startX + ((i % 3) - 1) * 18,
+            top: startY + ((i % 2) ? 10 : -10),
+            '--dx': `${dx - ((i % 3) - 1) * 18}px`,
+            '--delay': `${i * COIN_STAGGER_MS}ms`,
+            '--dur': `${COIN_FLIGHT_MS}ms`,
+          }}
+        >
+          <span className={styles.flyCoinY} style={{ '--dy': `${dy - ((i % 2) ? 10 : -10)}px` }}>
+            <img src={VEsCoinImg} alt="" />
+          </span>
+        </span>
+      ))}
 
-          {/* Multiple Emerging Coins for VE Coin Rewards (Staggered Trajectory) */}
-          {isCoinReward && stage === 'flying' && (
-            <>
-              <div className={`${styles.flyingAssetContainer} ${styles.flyingActive} ${styles.flyingCoinFollower1}`}>
-                <div className={styles.flyingTrailGlow} />
-                <img src={VEsCoinImg} alt="" className={styles.flyingMiniCoinImg} />
-              </div>
-              <div className={`${styles.flyingAssetContainer} ${styles.flyingActive} ${styles.flyingCoinFollower2}`}>
-                <div className={styles.flyingTrailGlow} />
-                <img src={VEsCoinImg} alt="" className={styles.flyingMiniCoinImg} />
-              </div>
-            </>
-          )}
-        </>
-      )}
-
-      {/* 3. Floating Celebration Toast ("Reward Collected!" / "Grand Prize Unlocked!") */}
-      {(stage === 'flying' || stage === 'impact') && (
-        <div className={`${styles.flySuccessBanner} ${isCrown ? styles.bannerGoldPrize : ''}`}>
-          <span className={styles.bannerSparkle}>✦</span>
-          <div className={styles.bannerTextWrap}>
-            <span className={styles.bannerKicker}>{kickerText}</span>
-            <strong className={styles.bannerReward}>{displayText}</strong>
+      {phase === 'toast' && reward && (
+        creditsWallet ? (
+          <div className={styles.flyToast} style={{ left: clampX(endX), top: endY + 30 }}>
+            <strong>{reward.short}</strong>
+            <span><Check size={12} strokeWidth={3.2} /> Added to wallet</span>
           </div>
-          <span className={styles.bannerSparkle}>✦</span>
-        </div>
+        ) : (
+          <div className={`${styles.flyToast} ${styles.flyToastGift}`} style={{ left: clampX(startX), top: startY - 20 }}>
+            <strong><Gift size={18} /> {reward.full}</strong>
+            <span><Check size={12} strokeWidth={3.2} /> {pending ? 'Claimed · delivery pending' : 'Claimed'}</span>
+          </div>
+        )
       )}
     </div>
   );

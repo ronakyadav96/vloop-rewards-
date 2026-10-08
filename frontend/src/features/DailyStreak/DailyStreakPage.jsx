@@ -1,5 +1,5 @@
-import { AlertCircle, KeyRound, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CalendarDays, CircleAlert, Lock, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   AUTH_TOKEN_KEY,
@@ -10,27 +10,19 @@ import {
 } from '../../services/api.js';
 import { isDemoMode, mockStreakHistory, mockStreakResponse } from '../../services/mockStreak.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { TopRightHeroImg, VEsCoinImg } from '../../assets/veloop/index.js';
-import AtmosphericDecorations from './AtmosphericDecorations.jsx';
 import CpaDemo from './CpaDemo.jsx';
-import HeroBanner from './HeroBanner.jsx';
-import RecentActivityAndBenefits from './RecentActivityAndBenefits.jsx';
+import DailyStreakView from './DailyStreakView.jsx';
 import RewardFlyAnimation from './RewardFlyAnimation.jsx';
-import RewardGrid from './RewardGrid.jsx';
-import SidebarNav from './SidebarNav.jsx';
-import StreakHeader from './StreakHeader.jsx';
-import StreakLoader from './StreakLoader.jsx';
 import StreakSkeleton from './StreakSkeleton.jsx';
-import TrustFooter from './TrustFooter.jsx';
-import UltimateReward from './UltimateReward.jsx';
-import WhyStreak from './WhyStreak.jsx';
+import { isClaimable } from './streakFormat.js';
 import { useServerCountdown } from './useServerCountdown.js';
-import styles from './DailyStreak.module.css';
+import { buildViewModel } from './viewModel.js';
+import styles from './StreakOverlays.module.css';
 
 function AuthRequired() {
   return (
     <main className={styles.centerState}>
-      <div className={styles.centerIcon}><KeyRound size={24} /></div>
+      <div className={styles.centerIcon}><Lock size={30} /></div>
       <span className={styles.sectionKicker}>AUTHENTICATION REQUIRED</span>
       <h1>Sign in to enter your loop.</h1>
       <p>Your streak and wallet are tied to your verified account. Sign in, then return here to continue.</p>
@@ -42,7 +34,7 @@ function AuthRequired() {
 function ErrorState({ message, onRetry }) {
   return (
     <main className={styles.centerState}>
-      <div className={styles.centerIcon}><AlertCircle size={24} /></div>
+      <div className={styles.centerIcon}><CircleAlert size={30} /></div>
       <span className={styles.sectionKicker}>COULDN'T LOAD YOUR LOOP</span>
       <h1>We hit a small pause.</h1>
       <p>{message || 'The Daily Streak service is unavailable right now. Please try again.'}</p>
@@ -56,29 +48,10 @@ function ErrorState({ message, onRetry }) {
 function EmptyState() {
   return (
     <main className={styles.centerState}>
-      <div className={styles.centerIcon}><AlertCircle size={24} /></div>
+      <div className={styles.centerIcon}><CalendarDays size={30} /></div>
       <h1>No active streak yet.</h1>
       <p>There is no active reward configuration available right now. Check back soon.</p>
     </main>
-  );
-}
-
-function InlineNotice({ notice, onClose }) {
-  if (!notice) return null;
-  const noticeClass = notice.type === 'error'
-    ? styles.noticeError
-    : notice.type === 'reset'
-      ? styles.noticeReset
-      : styles.noticeSuccess;
-
-  return (
-    <div
-      className={`${styles.inlineNotice} ${noticeClass}`}
-      role={notice.type === 'error' || notice.type === 'reset' ? 'alert' : 'status'}
-    >
-      <span>{notice.message}</span>
-      {onClose && <button type="button" onClick={onClose} aria-label="Dismiss message">×</button>}
-    </div>
   );
 }
 
@@ -92,7 +65,9 @@ function DailyStreakPage() {
   const [notice, setNotice] = useState(null);
   const [claimCard, setClaimCard] = useState(null);
   const [claiming, setClaiming] = useState(false);
-  const [activeNav, setActiveNav] = useState('home');
+  // `resetOccurred` is only true on the one response that performed the reset;
+  // keep it for the session so a later refresh doesn't hide it.
+  const [lastReset, setLastReset] = useState(null);
 
   const handleLogout = async () => {
     await signOut();
@@ -117,6 +92,7 @@ function DailyStreakPage() {
 
     try {
       const data = await getDailyStreak();
+      if (data?.resetOccurred && data.lastReset) setLastReset(data.lastReset);
       setStatus(data);
     } catch (requestError) {
       setError({
@@ -169,26 +145,37 @@ function DailyStreakPage() {
     onExpired: loadStatus,
   });
 
-  const resetNotice = status?.resetOccurred && status.lastReset
+  const resetNotice = lastReset && status
     ? {
         type: 'reset',
-        message: `Your previous streak was reset because Day ${status.lastReset.missedDay} missed its claim window. You are starting a new loop at Day ${status.currentDay} with a ${status.currentStreak}-day streak.`,
+        message: `Your previous streak was reset because Day ${lastReset.missedDay} missed its claim window. You are starting a new loop at Day ${status.currentDay} with a ${status.currentStreak}-day streak.`,
       }
     : null;
 
   const finalCard = useMemo(
-    () => status?.cards?.find((card) => card.day === 7),
+    () => (status?.cards?.length ? status.cards[status.cards.length - 1] : null),
     [status]
   );
 
   const [flyData, setFlyData] = useState(null);
   const [walletCelebrating, setWalletCelebrating] = useState(false);
+  const [celebrateDay, setCelebrateDay] = useState(null);
+  // While coins are in flight the navbar keeps showing the pre-claim backend
+  // balance; it switches to the refreshed backend balance when they land.
+  const [heldWallet, setHeldWallet] = useState(null);
 
-  const handleFlyComplete = useCallback(() => {
+  const handleWalletHit = useCallback(() => {
+    setHeldWallet(null);
     setWalletCelebrating(true);
     setTimeout(() => {
       setWalletCelebrating(false);
     }, 1400);
+  }, []);
+
+  const handleFlyFinish = useCallback(() => {
+    setFlyData(null);
+    setHeldWallet(null);
+    setCelebrateDay(null);
   }, []);
 
   const handleClaim = async () => {
@@ -200,8 +187,18 @@ function DailyStreakPage() {
     }
 
     const currentClaim = claimCard;
-    const sourceEl = document.querySelector(`[data-day="${currentClaim.day}"]`) || document.getElementById('streak-grid');
-    const startRect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+    // Start the reward burst from whichever view of the day is on screen.
+    const inView = (el) => {
+      const rect = el?.getBoundingClientRect();
+      return rect && rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+    };
+    const sourceEl = [
+      document.querySelector(`[data-day="${currentClaim.day}"]`),
+      document.querySelector(`[data-node-day="${currentClaim.day}"]`),
+    ].find(inView);
+    const startRect = sourceEl
+      ? sourceEl.getBoundingClientRect()
+      : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
     const walletEl = document.getElementById('navbar-wallet-pill');
     const endRect = walletEl ? walletEl.getBoundingClientRect() : null;
 
@@ -210,18 +207,20 @@ function DailyStreakPage() {
       const response = await claimDailyStreak();
       setClaimCard(null);
 
-      // Trigger reward pop & flight animation
-      if (startRect && endRect) {
+      // Visual feedback only, driven by the reward the backend just confirmed.
+      const confirmedReward = response?.claim?.reward || currentClaim.reward;
+      const pendingFulfillment = response?.claim?.status === 'PENDING_FULFILLMENT';
+      setCelebrateDay(currentClaim.day);
+      if (endRect) {
+        if (response?.wallet) setHeldWallet(status?.wallet ?? null);
         setFlyData({
-          active: true,
+          id: Date.now(),
           startX: Math.round(startRect.left + startRect.width / 2),
           startY: Math.round(startRect.top + startRect.height / 2),
           endX: Math.round(endRect.left + endRect.width / 2),
           endY: Math.round(endRect.top + endRect.height / 2),
-          day: currentClaim.day,
-          rewardType: currentClaim.reward?.rewardType,
-          amount: currentClaim.reward?.amount,
-          title: response?.claim?.reward?.title,
+          reward: confirmedReward,
+          pending: pendingFulfillment,
         });
       }
 
@@ -230,7 +229,9 @@ function DailyStreakPage() {
       setNotice({
         type: 'success',
         message: response?.claim?.reward?.title
-          ? `${response.claim.reward.title} claimed! Added to your wallet.`
+          ? pendingFulfillment
+            ? `${response.claim.reward.title} claimed! Delivery is pending.`
+            : `${response.claim.reward.title} claimed! Added to your wallet.`
           : 'Reward claim confirmed by the backend.',
       });
     } catch (requestError) {
@@ -245,113 +246,56 @@ function DailyStreakPage() {
     }
   };
 
-  if (loading && !status) return <><StreakLoader /><StreakSkeleton /></>;
+  if (loading && !status) return <StreakSkeleton />;
   if (error?.auth) return <AuthRequired />;
   if (error && !status) return <ErrorState message={error.message} onRetry={loadStatus} />;
   if (!status?.cards?.length) return <EmptyState />;
 
+  const openClaim = (card) => {
+    if (isClaimable(card)) setClaimCard(card);
+  };
+
+  const activeNotice =
+    notice ||
+    resetNotice ||
+    (error && status ? { type: 'error', message: error.message || 'The latest state could not be refreshed.' } : null);
+  const dismissNotice = resetNotice && !notice
+    ? undefined
+    : () => {
+        setNotice(null);
+        setError(null);
+      };
+
+  const vm = buildViewModel({
+    status,
+    history,
+    countdown: countdown.label,
+    lastReset,
+    wallet: heldWallet ?? status.wallet,
+    user,
+  });
+
   return (
-    <div className={styles.pageShell}>
-      {/* 1. Cinematic Background Atmosphere (Floating 3D reward stickers, stars & glowing orbs) */}
-      <AtmosphericDecorations />
-
-      {/* 2. Top Navbar with branding, nav links, coin pill & user menu */}
-      <StreakHeader
-        wallet={status.wallet}
-        user={user}
-        currentStreak={status.currentStreak ?? 1}
+    <>
+      <DailyStreakView
+        vm={vm}
+        notice={activeNotice}
+        onDismissNotice={dismissNotice}
+        walletCelebrating={walletCelebrating}
+        celebrateDay={celebrateDay}
+        demoMode={isDemoMode()}
+        onClaim={openClaim}
         onLogout={handleLogout}
-        isCelebrating={walletCelebrating}
       />
-
-      {isDemoMode() && (
-        <div className={styles.demoBanner}>Preview mode · values are mock API data</div>
-      )}
-
-      {/* 3. Main Dashboard Workspace (Sidebar dock + Main Canvas) */}
-      <div className={styles.dashboardLayout}>
-        {/* Desktop Icon Sidebar Dock (Image 1) */}
-        <SidebarNav
-          activeItem={activeNav}
-          onItemClick={(item) => setActiveNav(item)}
-        />
-
-        {/* Main Content Area */}
-        <main className={styles.mainContentCanvas}>
-          <InlineNotice
-            notice={
-              notice ||
-              resetNotice ||
-              (error && status
-                ? { type: 'error', message: error.message || 'The latest state could not be refreshed.' }
-                : null)
-            }
-            onClose={
-              resetNotice && !notice
-                ? undefined
-                : () => {
-                    setNotice(null);
-                    setError(null);
-                  }
-            }
-          />
-
-          {/* Top Row: Daily Check-In Hero (Left) + Day 7 Grand Prize Panel (Right) */}
-          <section className={styles.topSectionRow}>
-            <div className={styles.topSectionLeft}>
-              <HeroBanner status={status} />
-            </div>
-
-            <div className={styles.topSectionRight}>
-              <UltimateReward
-                card={finalCard}
-                reward={finalCard?.reward}
-                currentStreak={status?.currentStreak ?? 1}
-                onClaim={() => {
-                  if (finalCard?.state === 'AVAILABLE' || finalCard?.state === 'TODAY') {
-                    setClaimCard(finalCard);
-                  }
-                }}
-              />
-            </div>
-          </section>
-
-          {/* Centerpiece: 7-Day Streak Challenge Milestone Journey */}
-          <RewardGrid
-            cards={status.cards}
-            countdown={countdown.label}
-            onSelect={(card) => setClaimCard(card)}
-          />
-
-          {/* Lower Section: Rewards Showcase + Real Backend Recent Activity (Image 2) */}
-          <RecentActivityAndBenefits
-            historyClaims={history}
-            cards={status.cards}
-            onExploreRewards={() => {
-              const el = document.getElementById('streak-grid');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-          />
-
-          {/* Benefits Section: Why Maintain Your Streak? (4 Compact Benefit Cards) */}
-          <WhyStreak />
-
-          {/* Footer: 4 Feature Pills + Security Verification */}
-          <TrustFooter />
-        </main>
-      </div>
-
-      {/* CPA Advertisement Demo State Modal */}
       <CpaDemo
         card={claimCard}
+        isFinal={claimCard?.day === finalCard?.day}
         busy={claiming}
         onClose={() => !claiming && setClaimCard(null)}
         onConfirm={handleClaim}
       />
-
-      {/* Reward Collection Flying Animation (Smooth Flight to Navbar) */}
-      <RewardFlyAnimation flyData={flyData} onComplete={handleFlyComplete} />
-    </div>
+      <RewardFlyAnimation flyData={flyData} onWalletHit={handleWalletHit} onFinish={handleFlyFinish} />
+    </>
   );
 }
 

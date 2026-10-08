@@ -1,0 +1,390 @@
+/*
+ * Shared overlays and full-page states for the Daily Streak page:
+ * claim verification modal (CPA demo), reward-collection animation,
+ * and the sign-in / error / empty screens. These render outside the main
+ * view, so they carry their own palette tokens.
+ */
+.modalBackdrop,
+.flyLayer,
+.centerState {
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --text: #ffffff;
+  --text-muted: #c4b5fd;
+  --text-faint: rgba(196, 181, 253, 0.68);
+  --gold-300: #ffd54a;
+  --green-soft: #4ade80;
+  --radius-md: 16px;
+  --radius-xl: 28px;
+}
+
+.centerState {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #fff;
+  background:
+  radial-gradient(700px 420px at 50% 20%, rgba(124, 58, 237, 0.35), transparent 70%),
+  #0b0520;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+.centerState h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.centerState p {
+  max-width: 440px;
+  margin: 0;
+  color: #c4b5fd;
+  line-height: 1.6;
+}
+
+.centerIcon {
+  color: #ffd54a;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  background: linear-gradient(150deg, rgba(124, 58, 237, 0.5), rgba(18, 6, 43, 0.9));
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  box-shadow: 0 0 30px rgba(192, 38, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.sectionKicker {
+  color: #ffd54a;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.primaryBtnLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  margin-top: 6px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe27a, #facc15 40%, #f59e0b);
+  color: #2a0a00;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -8px rgba(245, 158, 11, 0.75);
+  transition: transform 0.2s ease;
+}
+
+.primaryBtnLink:hover {
+  color: #2a0a00;
+  transform: translateY(-2px);
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5, 2, 14, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.2s ease both;
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 440px);
+  padding: 28px;
+  border-radius: var(--radius-xl);
+  background:
+  radial-gradient(380px 200px at 50% 0%, rgba(192, 38, 255, 0.3), transparent 70%),
+  linear-gradient(165deg, #261056, #12062b);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9), 0 0 50px -10px rgba(192, 38, 255, 0.5);
+  color: var(--text);
+  animation: modalIn 0.32s var(--ease) both;
+}
+
+.modalClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modalClose:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.modalClose:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.modalKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modalTitle {
+  margin: 8px 0 18px !important;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.modalReward {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.modalArt {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.3), rgba(76, 29, 149, 0.5));
+}
+
+.modalArt img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  animation: floatY 2.4s ease-in-out infinite;
+}
+
+.modalRewardText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.modalRewardText small {
+  color: var(--text-faint);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modalRewardText strong {
+  color: var(--gold-300);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.modalRewardText span {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.modalProgress {
+  height: 8px;
+  margin-top: 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.modalProgress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7c3aed, #c026ff, #facc15);
+  box-shadow: 0 0 12px rgba(192, 38, 255, 0.7);
+  transition: width 0.8s var(--ease);
+}
+
+.modalStatus {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.modalNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 18px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(168, 85, 247, 0.18);
+  color: var(--text-faint);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.modalNote svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--gold-300);
+}
+
+.flyLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+.flyBurst {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.flyBurstRing {
+  position: absolute;
+  left: -60px;
+  top: -60px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 160, 0.65), rgba(250, 204, 21, 0.25) 40%, transparent 70%);
+  opacity: 0;
+  animation: burstFlash 0.8s ease-out both;
+}
+
+.flyBurstSpark {
+  position: absolute;
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  color: var(--gold-300);
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.9));
+  opacity: 0;
+  animation: burstSpark 0.85s cubic-bezier(0.15, 0.7, 0.3, 1) both;
+}
+
+.flyBurstSpark:nth-child(even) {
+  color: #e9d5ff;
+  filter: drop-shadow(0 0 6px rgba(192, 38, 255, 0.9));
+}
+
+.flyCoinX {
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: coinFlyX var(--dur) cubic-bezier(0.55, 0, 0.85, 0.45) var(--delay) both;
+}
+
+.flyCoinY {
+  position: absolute;
+  display: block;
+  animation: coinFlyY var(--dur) cubic-bezier(0.15, 0.6, 0.35, 1) var(--delay) both;
+}
+
+.flyCoinY img {
+  display: block;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.8));
+  animation: coinScale var(--dur) ease-in-out var(--delay) both;
+}
+
+.flyToast {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 18px;
+  border-radius: 16px;
+  background: linear-gradient(150deg, #2c1060, #160636);
+  border: 1px solid rgba(250, 204, 21, 0.6);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(250, 204, 21, 0.4);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  animation: toastFloat 2.6s var(--ease) both;
+}
+
+.flyToast strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gold-300);
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.flyToast span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #bbf7d0;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.flyToastGift strong {
+  font-size: 1.05rem;
+}
+
+@keyframes fadeIn { from { opacity: 0; } }
+
+@keyframes modalIn { from { opacity: 0; transform: translateY(18px) scale(0.96); } }
+
+@keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+@keyframes burstFlash { 0% { opacity: 0; transform: scale(0.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(1.8); } }
+
+@keyframes burstSpark { 0% { opacity: 0; transform: rotate(var(--a)) translateY(0) scale(0.4); } 20% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--dist) * -1)) scale(0.2); } }
+
+@keyframes coinFlyX { from { transform: translateX(0); } to { transform: translateX(var(--dx)); } }
+
+@keyframes coinFlyY { from { transform: translateY(0); } to { transform: translateY(var(--dy)); } }
+
+@keyframes coinScale { 0% { opacity: 0; transform: scale(0.3) rotate(0deg); } 15% { opacity: 1; transform: scale(1.2) rotate(40deg); } 80% { opacity: 1; transform: scale(0.85) rotate(220deg); } 100% { opacity: 0; transform: scale(0.4) rotate(300deg); } }
+
+@keyframes toastFloat { 0% { opacity: 0; transform: translate(-50%, 10px) scale(0.85); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.05); } 20% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; transform: translate(-50%, -8px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -22px) scale(0.96); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .modalBackdrop,
+  .modal,
+  .modal *,
+  .flyLayer * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
