@@ -20,8 +20,12 @@ export function createApp() {
 
   const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
 
+  // Vercel preview deployments get a unique hash per deploy, e.g.
+  // https://vloop-rewards-lhp1c9bjs-ronak-yadav.vercel.app
+  const vercelPreviewPattern = /^https:\/\/vloop-rewards-[a-z0-9-]+-ronak-yadav\.vercel\.app$/;
+
   const corsOptions = {
-    origin: allowedOrigins,
+    origin: [...allowedOrigins, vercelPreviewPattern],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   };
