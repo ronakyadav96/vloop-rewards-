@@ -1059,3 +1059,52 @@ a full-width feature card below on tablet and mobile.
   .page .cardUnit { font-size: 0.72rem; }
   .page .cardBtn { font-size: 0.8rem; }
 }
+
+/* ==========================================================================
+Softer ambient glow + frosted-glass cards.
+========================================================================== */
+.page::before { opacity: 0.22; filter: blur(120px); }
+.page::after { opacity: 0.12; filter: blur(120px); }
+
+.page .cards .card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 12px 32px -14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+
+.page .cards .card:hover { border-color: rgba(255, 255, 255, 0.2); }
+
+.page .cards .card_claimed {
+  background: linear-gradient(160deg, rgba(74, 222, 128, 0.14), rgba(255, 255, 255, 0.025) 70%);
+  border-color: rgba(74, 222, 128, 0.45);
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.6), 0 0 18px -8px rgba(34, 197, 94, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.page .cards .card_available {
+  background: linear-gradient(160deg, rgba(251, 191, 36, 0.13), rgba(255, 255, 255, 0.025) 70%);
+  border-color: rgba(251, 191, 36, 0.55);
+  box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.6), 0 0 20px -8px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Day 7 keeps its gold identity, but as tinted glass with a calmer glow. */
+.page .cards .cardFinal {
+  border: 1.5px solid rgba(255, 224, 102, 0.4);
+  background:
+    radial-gradient(420px 320px at 50% 30%, rgba(250, 204, 21, 0.1), transparent 65%),
+    radial-gradient(380px 300px at 50% 80%, rgba(124, 58, 237, 0.14), transparent 70%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.7), 0 0 30px -16px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: none;
+}
+
+.page .cards .cardFinal.card_claimed { border-color: rgba(74, 222, 128, 0.5); }
+.page .finalRays { opacity: 0.5; }
+.page .cardFinal .cardArt img { filter: drop-shadow(0 24px 28px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(250, 204, 21, 0.2)); }
+.page .cardFinal .cardValue { filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.25)); }
+.page .cardArt img { filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.5)); }
+.page .cardFinal .typeBadge { box-shadow: none; }
